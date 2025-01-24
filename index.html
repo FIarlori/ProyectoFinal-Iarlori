@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce</title>
+    <link rel="stylesheet" href="./styles/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <script defer src="./js/app.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="header-top">
+            <div class="header-left">
+                <h1 >TecStore - E-commerce</h1>
+                <div class="menu-container">
+                    <div id="menu-icon" class="menu-icon">☰</div>
+                    <div id="dropdown-menu" class="dropdown-menu">
+                        <a href="#">Inicio</a>
+                        <a href="#" id="buscarBtn">Buscar</a>
+                        <a href="#">Categorias</a>
+                        <ul class="submenu">
+                            <li><a href="#">Smartphones</a></li>
+                            <li><a href="#">Laptops</a></li>
+                            <li><a href="#">Accesorios</a></li>
+                            <li><a href="#">Tablets</a></li>
+                        </ul>
+                        <a href="#">Ordenar por precio</a>
+                        <ul class="submenu">
+                            <li><a href="#" id="filtroPrecioAsc">Menor a Mayor</a></li>
+                            <li><a href="#" id="filtroPrecioDesc">Mayor a Menor</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-bottom">
+            <form id="barraBusqueda" >
+                <input type="text" id="buscarProducto" name="busqueda" placeholder="Buscar producto...">
+            </form>
+            <nav>
+                <a href="./pages/carrito.html"><button id="verCarritoBtn">
+                    <i class="fa fa-shopping-cart"></i> Ver Carrito
+                </button></a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="app"></main>
+
+    <div id="carrito" >
+    </div>
+
+    <div id="total-carrito">Total (incluye IVA 21%): $0.00</div>
+
+    <footer>
+        <p>© 2025 TecStore</p>
+    </footer>
+
+</body>
+
+</html>
