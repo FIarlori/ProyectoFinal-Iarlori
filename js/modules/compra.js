@@ -69,7 +69,7 @@ document.getElementById('checkout-form').addEventListener('submit', (event) => {
 function redirigirAInicio() {
     const form = document.createElement('form');
     form.method = 'GET';
-    form.action = '../index.html';
+    form.action = '/index.html';
     document.body.appendChild(form);
     form.submit();
 }
