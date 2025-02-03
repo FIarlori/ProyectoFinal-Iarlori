@@ -22,7 +22,7 @@ document.getElementById('checkout-form').addEventListener('submit', (event) => {
     const email = document.getElementById("email").value;
     const direccion = document.getElementById("direccion").value;
     const paymentMethod = metodoDePago.value;
-    const cardDetails = Array.from(datosTarjetaDiv.querySelectorAll('input')).map(input => ({
+    const datosTarjeta = Array.from(datosTarjetaDiv.querySelectorAll('input')).map(input => ({
         nombre: input.previousElementSibling.textContent.replace(':', ''),
         value: input.value
     }));
@@ -32,8 +32,8 @@ document.getElementById('checkout-form').addEventListener('submit', (event) => {
     if (!email) camposIncompletos.push('Correo Electrónico');
     if (!direccion) camposIncompletos.push('Dirección');
     if (paymentMethod === 'tarjeta') {
-        cardDetails.forEach(detail => {
-            if (!detail.value) camposIncompletos.push(detail.nombre);
+        datosTarjeta.forEach(dato => {
+            if (!dato.value) camposIncompletos.push(dato.nombre);
         });
     }
 
