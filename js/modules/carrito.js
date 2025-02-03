@@ -182,7 +182,6 @@ if (checkoutButton) {
         const address = document.getElementById("address").value;
 
         if (name && email && address) {
-            mostrarNotificacion(`¡Gracias por tu compra, ${name}! Un resumen ha sido enviado a ${email}.`);
             
             checkoutForm.reset();
             checkoutSection.style.display = "none";
