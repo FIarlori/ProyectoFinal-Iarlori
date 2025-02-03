@@ -67,12 +67,11 @@ document.getElementById('checkout-form').addEventListener('submit', (event) => {
 });
 
 function redirigirAInicio() {
-    fetch('../index.html') // Ruta relativa a compra.html
-        .then(response => response.text())
-        .then(html => {
-            document.open();
-            document.write(html);
-            document.close();
-        })
-        .catch(error => console.error('Error al cargar la página de inicio:', error));
+    const rutaInicio = '../index.html'; 
+    const enlace = document.createElement('a');
+    enlace.href = rutaInicio;
+    enlace.style.display = 'none'; 
+    document.body.appendChild(enlace);
+    enlace.click(); 
+    document.body.removeChild(enlace); 
 }
