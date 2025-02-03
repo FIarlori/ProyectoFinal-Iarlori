@@ -1,0 +1,58 @@
+[
+    {
+        "id": 1,
+        "nombre": "iPhone 14",
+        "precio": 1200,
+        "imagen": "iphone-14.png",
+        "categoria": "smartphones"
+    },
+    {
+        "id": 2,
+        "nombre": "Samsung Galaxy S22",
+        "precio": 1000,
+        "imagen": "s22.png",
+        "categoria": "smartphones"
+    },
+    {
+        "id": 3,
+        "nombre": "MacBook Air M1",
+        "precio": 1500,
+        "imagen": "macbook-m1.png",
+        "categoria": "laptops"
+    },
+    {
+        "id": 4,
+        "nombre": "Dell XPS 13",
+        "precio": 1400,
+        "imagen": "dell-xps-13.png",
+        "categoria": "laptops"
+    },
+    {
+        "id": 5,
+        "nombre": "Auriculares Bose",
+        "precio": 300,
+        "imagen": "bose.png",
+        "categoria": "accesorios"
+    },
+    {
+        "id": 6,
+        "nombre": "Cargador Rápido",
+        "precio": 50,
+        "imagen": "cargador.png",
+        "categoria": "accesorios"
+    },
+    {
+        "id": 7,
+        "nombre": "iPad Pro",
+        "precio": 1100,
+        "imagen": "ipad-pro.png",
+        "categoria": "tablets"
+    },
+    {
+        "id": 8,
+        "nombre": "Samsung Galaxy Tab",
+        "precio": 900,
+        "imagen": "galaxy-tab.png",
+        "categoria": "tablets"
+    }
+]

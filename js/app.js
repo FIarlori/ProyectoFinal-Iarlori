@@ -1,26 +1,22 @@
-class Producto {
-    constructor(id, nombre, precio, imagen, categoria) {
-        this.id = id;
-        this.nombre = nombre;
-        this.precio = precio;
-        this.imagen = imagen;
-        this.categoria = categoria;
-    }
-}
-
-const productos = [
-    new Producto(1, "iPhone 14", 1200, "iphone-14.png", "smartphones"),
-    new Producto(2, "Samsung Galaxy S22", 1000, "s22.png", "smartphones"),
-    new Producto(3, "MacBook Air M1", 1500, "macbook-m1.png", "laptops"),
-    new Producto(4, "Dell XPS 13", 1400, "dell-xps-13.png", "laptops"),
-    new Producto(5, "Auriculares Bose", 300, "bose.png", "accesorios"),
-    new Producto(6, "Cargador Rápido", 50, "cargador.png", "accesorios"),
-    new Producto(7, "iPad Pro", 1100, "ipad-pro.png", "tablets"),
-    new Producto(8, "Samsung Galaxy Tab", 900, "galaxy-tab.png", "tablets"),
-];
-
+let productos = [];
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 let filtros = { categorias: [], precio: null };
+
+async function fetchProductos() {
+    try {
+        const response = await fetch('./data/productos.json');
+        if (!response.ok) {
+            throw new Error('Error al cargar los productos');
+        }
+        const data = await response.json();
+        productos = data;
+        mostrarProductos(productos);
+    } catch (error) {
+        console.error('Error al cargar los productos:', error);
+    } finally {
+        console.log('Carga de productos finalizada');
+    }
+}
 
 function calcularTotal(precio, cantidad, impuesto = 0.21) {
     return precio * cantidad * (1 + impuesto);
@@ -59,6 +55,7 @@ function agregarProductoAlCarrito(idProducto, categoria) {
     localStorage.setItem("carrito", JSON.stringify(carrito));
     mostrarCarrito();
     cantidadSpan.textContent = 0;
+    mostrarNotificacion("Producto agregado al carrito");
 }
 
 function mostrarCarrito() {
@@ -119,11 +116,19 @@ function mostrarProductos(productos) {
                     <button class="cantidad-btn" onclick="cambiarCantidad(${producto.id}, '${producto.categoria}', -1)">-</button>
                     <span id="cantidad-${producto.categoria}-${producto.id}">0</span>
                     <button class="cantidad-btn" onclick="cambiarCantidad(${producto.id}, '${producto.categoria}', 1)">+</button>
-                    <button class="agregar-btn" onclick="agregarProductoAlCarrito(${producto.id}, '${producto.categoria}')">Agregar al carrito</button>
+                    <button class="agregar-btn agregar-carrito-btn" data-id-producto="${producto.id}" data-categoria="${producto.categoria}">Agregar al carrito</button>
                 </div>
             </div>
         `;
         appDiv.appendChild(productoDiv);
+    });
+
+    document.querySelectorAll('.agregar-carrito-btn').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const idProducto = event.target.getAttribute('data-id-producto');
+            const categoria = event.target.getAttribute('data-categoria');
+            agregarProductoAlCarrito(parseInt(idProducto), categoria);
+        });
     });
 }
 
@@ -167,13 +172,24 @@ function inicializar() {
         actualizarFiltros();
     });
 
-    mostrarProductos(productos);
+    fetchProductos();
     mostrarCarrito();
 }
 
 function actualizarFiltros() {
     const productosFiltrados = aplicarFiltros(productos.slice());
     mostrarProductos(productosFiltrados);
+}
+
+function mostrarNotificacion(mensaje) {
+    Toastify({
+        text: mensaje,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "#4CAF50",
+        stopOnFocus: true
+    }).showToast();
 }
 
 inicializar();

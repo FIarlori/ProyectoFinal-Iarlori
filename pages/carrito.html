@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito de Compras</title>
     <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script defer src="../js/modules/carrito.js"></script>
 </head>
 
@@ -29,11 +31,18 @@
     </div>
 
     <main id="producto-carrito" ></main>
-    <div id="total-carrito">Total (incluye IVA 21%): $0.00</div>
+    <div id="total-finalizar-container">
+        <div id="total-carrito">Total (incluye IVA 21%): $0.00</div>
+        <div id="finalizarCompraContainer">
+            <button id="finalizarCompraBtn">Finalizar Compra</button>
+        </div>
+    </div>
 
     <footer>
         <p>© 2025 TecStore</p>
     </footer>
+
+    
 
 </body>
 
