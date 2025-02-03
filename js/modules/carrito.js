@@ -95,14 +95,13 @@ function agregarProducto(idProducto, categoria, cantidad = 1) {
     if (item) {
         item.cantidad += cantidad;
     } else {
-        const producto = { id: idProducto, nombre: "Producto", precio: 100, imagen: "imagen.jpg" }; // Replace with actual product details
+        const producto = { id: idProducto, nombre: "Producto", precio: 100, imagen: "imagen.jpg" }; 
         carrito.push({ producto, categoria, cantidad });
     }
     localStorage.setItem("carrito", JSON.stringify(carrito));
     mostrarNotificacion("Producto agregado al carrito");
 }
 
-// Ensure this function is called when the "Agregar al carrito" button is clicked
 document.querySelectorAll('.agregar-carrito-btn').forEach(button => {
     button.addEventListener('click', (event) => {
         const idProducto = event.target.getAttribute('data-id-producto');
@@ -128,7 +127,18 @@ function finalizarCompra() {
         mostrarNotificacion("El carrito está vacío.");
         return;
     }
-    window.location.href = "compra.html";
+    cargarPaginaCompra();
+}
+
+function cargarPaginaCompra() {
+    fetch('compra.html')
+        .then(response => response.text())
+        .then(html => {
+            document.open();
+            document.write(html);
+            document.close();
+        })
+        .catch(error => console.error('Error al cargar la página de compra:', error));
 }
 
 function inicializarCarrito() {
@@ -138,7 +148,6 @@ function inicializarCarrito() {
         finalizarCompraBtn.addEventListener('click', finalizarCompra);
     }
     mostrarCarrito();
-    // Initialize the add product functionality
     document.querySelectorAll('.agregar-carrito-btn').forEach(button => {
         button.addEventListener('click', (event) => {
             const idProducto = event.target.getAttribute('data-id-producto');
@@ -150,7 +159,6 @@ function inicializarCarrito() {
 
 inicializarCarrito();
 
-// Selección de elementos
 const checkoutButton = document.getElementById("checkout-button");
 if (checkoutButton) {
     const checkoutSection = document.getElementById("checkout");
@@ -159,17 +167,13 @@ if (checkoutButton) {
     const cartTotal = document.getElementById("cart-total");
     const checkoutForm = document.getElementById("checkout-form");
 
-    // Mostrar la sección de finalizar compra
     checkoutButton.addEventListener("click", () => {
-        // Transferir el total del carrito a la sección de checkout
         finalTotal.textContent = cartTotal.textContent;
 
-        // Mostrar la sección de finalizar compra y ocultar el carrito
         cartSection.style.display = "none";
         checkoutSection.style.display = "block";
     });
 
-    // Manejo del envío del formulario de compra
     checkoutForm.addEventListener("submit", (event) => {
         event.preventDefault();
 
@@ -177,16 +181,13 @@ if (checkoutButton) {
         const email = document.getElementById("email").value;
         const address = document.getElementById("address").value;
 
-        // Validación y simulación del proceso de compra
         if (name && email && address) {
             mostrarNotificacion(`¡Gracias por tu compra, ${name}! Un resumen ha sido enviado a ${email}.`);
             
-            // Resetear formulario y mostrar el carrito nuevamente
             checkoutForm.reset();
             checkoutSection.style.display = "none";
             cartSection.style.display = "block";
 
-            // Limpiar el carrito (opcional)
             document.getElementById("cart-items").innerHTML = "";
             cartTotal.textContent = "0";
         } else {
