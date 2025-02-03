@@ -5,35 +5,35 @@ carrito.forEach(item => {
 });
 document.getElementById('final-total').textContent = totalGeneral.toFixed(2);
 
-const paymentMethodSelect = document.getElementById('payment-method');
-const cardDetailsDiv = document.getElementById('card-details');
+const metodoDePago = document.getElementById('metodo-pago');
+const datosTarjetaDiv = document.getElementById('datos-tarjeta');
 
-paymentMethodSelect.addEventListener('change', () => {
-    if (paymentMethodSelect.value === 'tarjeta') {
-        cardDetailsDiv.style.display = 'block';
+metodoDePago.addEventListener('change', () => {
+    if (metodoDePago.value === 'tarjeta') {
+        datosTarjetaDiv.style.display = 'block';
     } else {
-        cardDetailsDiv.style.display = 'none';
+        datosTarjetaDiv.style.display = 'none';
     }
 });
 
 document.getElementById('checkout-form').addEventListener('submit', (event) => {
     event.preventDefault();
-    const name = document.getElementById("name").value;
+    const nombre = document.getElementById("nombre").value;
     const email = document.getElementById("email").value;
-    const address = document.getElementById("address").value;
-    const paymentMethod = paymentMethodSelect.value;
-    const cardDetails = Array.from(cardDetailsDiv.querySelectorAll('input')).map(input => ({
-        name: input.previousElementSibling.textContent.replace(':', ''),
+    const direccion = document.getElementById("direccion").value;
+    const paymentMethod = metodoDePago.value;
+    const cardDetails = Array.from(datosTarjetaDiv.querySelectorAll('input')).map(input => ({
+        nombre: input.previousElementSibling.textContent.replace(':', ''),
         value: input.value
     }));
 
     let camposIncompletos = [];
-    if (!name) camposIncompletos.push('Nombre');
+    if (!nombre) camposIncompletos.push('Nombre');
     if (!email) camposIncompletos.push('Correo Electrónico');
-    if (!address) camposIncompletos.push('Dirección');
+    if (!direccion) camposIncompletos.push('Dirección');
     if (paymentMethod === 'tarjeta') {
         cardDetails.forEach(detail => {
-            if (!detail.value) camposIncompletos.push(detail.name);
+            if (!detail.value) camposIncompletos.push(detail.nombre);
         });
     }
 

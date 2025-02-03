@@ -420,7 +420,7 @@ footer {
     margin-top: 20px;
 }
 
-#checkout,  #card-details {
+#checkout,  #datos-tarjeta {
     margin-top: 20px;
     width: 500px;
     margin-bottom: 50px; /* Added margin-bottom */
@@ -433,18 +433,18 @@ footer {
     background-color: #f9f9f9;
 }
 
-#checkout-form, #card-details-form {
+#checkout-form, #datos-tarjeta-form {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-#checkout-form label, #card-details label {
+#checkout-form label, #datos-tarjeta label {
     display: block;
     margin-top: 10px;
 }
 
-#checkout-form input, #checkout-form select, #card-details input, #card-details select {
+#checkout-form input, #checkout-form select, #datos-tarjeta input, #datos-tarjeta select {
     display: block;
     min-height: 30px;
     width: 100%;

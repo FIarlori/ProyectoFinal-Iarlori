@@ -28,37 +28,37 @@
         <section id="checkout">
             <h2>Datos Personales</h2>
             <form id="checkout-form">
-                <label for="name">Nombre:</label>
+                <label for="nombre">Nombre:</label>
                 <input type="text" id="name" />
         
                 <label for="email">Correo Electrónico:</label>
                 <input type="email" id="email"  />
         
-                <label for="address">Dirección:</label>
-                <input type="text" id="address"  />
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion"  />
 
-                <label for="payment-method">Método de pago:</label>
-                <select id="payment-method" >
+                <label for="metodo-pago">Método de pago:</label>
+                <select id="metodo-pago" >
                     <option value="efectivo">Efectivo en punto de pago</option>
                     <option value="tarjeta">Tarjeta de débito / crédito</option>
                 </select>
 
-                <div id="card-details" style="display: none;">
+                <div id="datos-tarjeta" style="display: none;">
                     <h2>Datos de la Tarjeta</h2>
-                    <label for="card-number">Número de tarjeta:</label>
-                    <input type="text" id="card-number" />
+                    <label for="numero-tarjeta">Número de tarjeta:</label>
+                    <input type="text" id="numero-tarjeta" />
 
-                    <label for="card-name">Nombre y apellido del titular:</label>
-                    <input type="text" id="card-name" />
+                    <label for="nombre-tarjeta">Nombre y apellido del titular:</label>
+                    <input type="text" id="nombre-tarjeta" />
 
-                    <label for="card-expiry">Fecha de vencimiento:</label>
-                    <input type="text" id="card-expiry" />
+                    <label for="fecha-expiracion">Fecha de vencimiento:</label>
+                    <input type="text" id="fecha-expiracion" />
 
-                    <label for="card-cvc">Código de seguridad:</label>
-                    <input type="text" id="card-cvc" />
+                    <label for="cvc-tarjeta">Código de seguridad:</label>
+                    <input type="text" id="cvc-tarjeta" />
 
-                    <label for="card-dni">DNI del titular de la tarjeta:</label>
-                    <input type="text" id="card-dni" />
+                    <label for="dni-tarjeta">DNI del titular de la tarjeta:</label>
+                    <input type="text" id="dni-tarjeta" />
                 </div>
         
                 <p>Total a pagar: $<span id="final-total"></span></p>

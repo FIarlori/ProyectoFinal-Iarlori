@@ -177,11 +177,11 @@ if (checkoutButton) {
     checkoutForm.addEventListener("submit", (event) => {
         event.preventDefault();
 
-        const name = document.getElementById("name").value;
+        const nombre = document.getElementById("nombre").value;
         const email = document.getElementById("email").value;
-        const address = document.getElementById("address").value;
+        const direccion = document.getElementById("direccion").value;
 
-        if (name && email && address) {
+        if (nombre && email && direccion) {
             
             checkoutForm.reset();
             checkoutSection.style.display = "none";
