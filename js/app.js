@@ -4,7 +4,7 @@ let filtros = { categorias: [], precio: null };
 
 async function fetchProductos() {
     try {
-        const response = await fetch('./data/productos.json');
+        const response = await fetch('./db/productos.json');
         if (!response.ok) {
             throw new Error('Error al cargar los productos');
         }
@@ -12,9 +12,11 @@ async function fetchProductos() {
         productos = data;
         mostrarProductos(productos);
     } catch (error) {
-        console.error('Error al cargar los productos:', error);
-    } finally {
-        console.log('Carga de productos finalizada');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudieron cargar los productos. Inténtalo de nuevo más tarde.'
+        });
     }
 }
 
@@ -25,7 +27,7 @@ function calcularTotal(precio, cantidad, impuesto = 0.21) {
 function cambiarCantidad(idProducto, categoria, cambio) {
     const cantidadSpan = document.getElementById(`cantidad-${categoria}-${idProducto}`);
     let cantidad = parseInt(cantidadSpan.textContent);
-    cantidad = Math.max(0, cantidad + cambio);
+    cantidad = Math.max(1, cantidad + cambio); // Asegura que el valor mínimo sea 1
     cantidadSpan.textContent = cantidad;
 }
 
@@ -54,7 +56,6 @@ function agregarProductoAlCarrito(idProducto, categoria) {
 
     localStorage.setItem("carrito", JSON.stringify(carrito));
     mostrarCarrito();
-    cantidadSpan.textContent = 0;
     mostrarNotificacion("Producto agregado al carrito");
 }
 
@@ -108,13 +109,13 @@ function mostrarProductos(productos) {
         productoDiv.classList.add('producto');
         productoDiv.innerHTML = `
             <div class="producto-imagen">
-                <img src="./public/images/${producto.imagen}" alt="${producto.nombre}">
+                <img src="./assets/images/${producto.imagen}" alt="${producto.nombre}">
             </div>
             <div class="producto-detalles">
                 <p class="producto-nombre">${producto.nombre} - $${producto.precio}</p>
                 <div class="producto-acciones">
                     <button class="cantidad-btn" onclick="cambiarCantidad(${producto.id}, '${producto.categoria}', -1)">-</button>
-                    <span id="cantidad-${producto.categoria}-${producto.id}">0</span>
+                    <span id="cantidad-${producto.categoria}-${producto.id}">1</span>
                     <button class="cantidad-btn" onclick="cambiarCantidad(${producto.id}, '${producto.categoria}', 1)">+</button>
                     <button class="agregar-btn agregar-carrito-btn" data-id-producto="${producto.id}" data-categoria="${producto.categoria}">Agregar al carrito</button>
                 </div>
@@ -188,7 +189,8 @@ function mostrarNotificacion(mensaje) {
         gravity: "top",
         position: "right",
         backgroundColor: "#4CAF50",
-        stopOnFocus: true
+        stopOnFocus: true,
+        close: true
     }).showToast();
 }
 

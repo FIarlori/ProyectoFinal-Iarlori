@@ -171,8 +171,8 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
-    margin-right: 150px;
+    gap: 1px;
+    margin-right: 250px;
 }
 
 .producto-acciones button {
@@ -203,6 +203,7 @@ main {
     background-color: #007bff;
     color: white;
     border: 1px solid grey;
+    margin-left: 100px; 
 }
 
 .producto-acciones .eliminar-btn {
@@ -469,5 +470,11 @@ footer {
     font-size: 1.5em;
     color: #555;
     margin-top: 20px;
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
 }
 

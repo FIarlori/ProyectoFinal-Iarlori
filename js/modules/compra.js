@@ -16,54 +16,143 @@ metodoDePago.addEventListener('change', () => {
     }
 });
 
+function mostrarMensajeError(input, mensaje) {
+    let errorSpan = input.nextElementSibling;
+    if (!errorSpan || !errorSpan.classList.contains('error-message')) {
+        errorSpan = document.createElement('span');
+        errorSpan.classList.add('error-message');
+        input.parentNode.insertBefore(errorSpan, input.nextSibling);
+    }
+    errorSpan.textContent = mensaje;
+}
+
+function limpiarMensajeError(input) {
+    let errorSpan = input.nextElementSibling;
+    if (errorSpan && errorSpan.classList.contains('error-message')) {
+        errorSpan.textContent = '';
+    }
+}
+
+document.getElementById('nombre').addEventListener('blur', (event) => {
+    const input = event.target;
+    if (!/^[a-zA-Z\s]+$/.test(input.value)) {
+        mostrarMensajeError(input, 'El nombre solo debe contener letras.');
+    } else {
+        limpiarMensajeError(input);
+    }
+});
+
+document.getElementById('email').addEventListener('blur', (event) => {
+    const input = event.target;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
+        mostrarMensajeError(input, 'El correo electrónico debe tener un formato válido.');
+    } else {
+        limpiarMensajeError(input);
+    }
+});
+
+document.getElementById('numero-tarjeta').addEventListener('blur', (event) => {
+    const input = event.target;
+    if (!/^\d{14,19}$/.test(input.value)) {
+        mostrarMensajeError(input, 'El número de tarjeta debe tener entre 14 y 19 dígitos.');
+    } else {
+        limpiarMensajeError(input);
+    }
+});
+
+document.getElementById('nombre-tarjeta').addEventListener('blur', (event) => {
+    const input = event.target;
+    if (!/^[a-zA-Z\s]+$/.test(input.value)) {
+        mostrarMensajeError(input, 'El nombre solo debe contener letras.');
+    } else {
+        limpiarMensajeError(input);
+    }
+});
+
+document.getElementById('fecha-expiracion').addEventListener('blur', (event) => {
+    const input = event.target;
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(input.value)) {
+        mostrarMensajeError(input, 'La fecha de vencimiento debe tener el formato mm/yy.');
+    } else {
+        limpiarMensajeError(input);
+    }
+});
+
+document.getElementById('cvc-tarjeta').addEventListener('blur', (event) => {
+    const input = event.target;
+    if (!/^\d{3,4}$/.test(input.value)) {
+        mostrarMensajeError(input, 'El código de seguridad debe tener entre 3 y 4 dígitos.');
+    } else {
+        limpiarMensajeError(input);
+    }
+});
+
+document.getElementById('dni-tarjeta').addEventListener('blur', (event) => {
+    const input = event.target;
+    if (!/^\d{7,10}$/.test(input.value)) {
+        mostrarMensajeError(input, 'El DNI debe tener entre 7 y 10 dígitos.');
+    } else {
+        limpiarMensajeError(input);
+    }
+});
+
 document.getElementById('checkout-form').addEventListener('submit', (event) => {
     event.preventDefault();
-    const nombre = document.getElementById("nombre").value;
-    const email = document.getElementById("email").value;
-    const direccion = document.getElementById("direccion").value;
-    const paymentMethod = metodoDePago.value;
-    const datosTarjeta = Array.from(datosTarjetaDiv.querySelectorAll('input')).map(input => ({
-        nombre: input.previousElementSibling.textContent.replace(':', ''),
-        value: input.value
-    }));
+    try {
+        const nombre = document.getElementById("nombre").value;
+        const email = document.getElementById("email").value;
+        const direccion = document.getElementById("direccion").value;
+        const paymentMethod = metodoDePago.value;
+        const datosTarjeta = Array.from(datosTarjetaDiv.querySelectorAll('input')).map(input => ({
+            nombre: input.previousElementSibling.textContent.replace(':', ''),
+            value: input.value
+        }));
 
-    let camposIncompletos = [];
-    if (!nombre) camposIncompletos.push('Nombre');
-    if (!email) camposIncompletos.push('Correo Electrónico');
-    if (!direccion) camposIncompletos.push('Dirección');
-    if (paymentMethod === 'tarjeta') {
-        datosTarjeta.forEach(dato => {
-            if (!dato.value) camposIncompletos.push(dato.nombre);
-        });
-    }
+        let camposIncompletos = [];
+        if (!/^[a-zA-Z\s]+$/.test(nombre)) camposIncompletos.push('Nombre');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) camposIncompletos.push('Correo Electrónico');
+        if (!direccion) camposIncompletos.push('Dirección');
+        if (paymentMethod === 'tarjeta') {
+            datosTarjeta.forEach(dato => {
+                if (dato.nombre === 'Número de tarjeta' && !/^\d{14,19}$/.test(dato.value)) camposIncompletos.push(dato.nombre);
+                if (dato.nombre === 'Nombre y apellido del titular' && !/^[a-zA-Z\s]+$/.test(dato.value)) camposIncompletos.push(dato.nombre);
+                if (dato.nombre === 'Fecha de vencimiento' && !/^(0[1-9]|1[0-2])\/\d{2}$/.test(dato.value)) camposIncompletos.push(dato.nombre);
+                if (dato.nombre === 'Código de seguridad' && !/^\d{3,4}$/.test(dato.value)) camposIncompletos.push(dato.nombre);
+                if (dato.nombre === 'DNI del titular de la tarjeta' && !/^\d{7,10}$/.test(dato.value)) camposIncompletos.push(dato.nombre);
+            });
+        }
 
-    if (camposIncompletos.length === 0) {
-        Swal.fire({
-            icon: 'success',
-            title: '¡Gracias por tu compra!',
-            text: `Un resumen ha sido enviado a ${email}.`,
-            showConfirmButton: true,
-            allowOutsideClick: true
-        }).then(() => {
-            localStorage.removeItem("carrito");
-            document.getElementById('checkout-form').reset();
-            const productoCarrito = document.getElementById('producto-carrito');
-            if (productoCarrito) {
-                productoCarrito.innerHTML = '<div class="mensaje-vacio">El carrito está vacío</div>';
-            }
-            const totalCarrito = document.getElementById('total-carrito');
-            if (totalCarrito) {
-                totalCarrito.textContent = 'Total (incluye IVA 21%): $0.00';
-            }
-            redirigirAInicio();
-        });
-    } else {
+        if (camposIncompletos.length === 0) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Gracias por tu compra!',
+                text: `Un resumen ha sido enviado a ${email}.`,
+                showConfirmButton: true,
+                allowOutsideClick: true
+            }).then(() => {
+                localStorage.removeItem("carrito");
+                document.getElementById('checkout-form').reset();
+                const productoCarrito = document.getElementById('producto-carrito');
+                if (productoCarrito) {
+                    productoCarrito.innerHTML = '<div class="mensaje-vacio">El carrito está vacío</div>';
+                }
+                const totalCarrito = document.getElementById('total-carrito');
+                if (totalCarrito) {
+                    totalCarrito.textContent = 'Total (incluye IVA 21%): $0.00';
+                }
+                redirigirAInicio();
+            });
+        } else {
+            throw new Error(`Por favor, completa los siguientes campos: ${camposIncompletos.join(', ')}`);
+        }
+    } catch (error) {
+        console.error('Error al procesar la compra:', error);
         Swal.fire({
             icon: 'error',
-            title: 'Campos Incompletos',
-            text: `Por favor, completa los siguientes campos: ${camposIncompletos.join(', ')}.`
+            title: 'Datos Incompletos',
+            text: error.message
         });
-    }
+    } 
 });
 
 function redirigirAInicio() {

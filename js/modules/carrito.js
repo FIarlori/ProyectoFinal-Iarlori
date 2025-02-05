@@ -12,23 +12,10 @@ function eliminarProducto(idProducto, categoria) {
     if (itemIndex === -1) {
         return;
     }
-    const item = carrito[itemIndex];
-    const cantidadAEliminar = parseInt(document.getElementById(`cantidad-${categoria}-${idProducto}`).textContent);
-    if (isNaN(cantidadAEliminar) || cantidadAEliminar <= 0) {
-        return;
-    }
-    switch (true) {
-        case cantidadAEliminar >= item.cantidad:
-            carrito.splice(itemIndex, 1);
-            mostrarNotificacion("Producto eliminado del carrito");
-            break;
-        default:
-            item.cantidad -= cantidadAEliminar;
-            mostrarNotificacion("Producto eliminado del carrito");
-            break;
-    }
+    carrito.splice(itemIndex, 1);
     localStorage.setItem("carrito", JSON.stringify(carrito));
     mostrarCarrito();
+    mostrarNotificacion("Producto eliminado del carrito", "#FFA500");
 }
 
 function cambiarCantidad(idProducto, categoria, cambio) {
@@ -36,15 +23,52 @@ function cambiarCantidad(idProducto, categoria, cambio) {
     const cantidadSpan = document.getElementById(`cantidad-${categoria}-${idProducto}`);
     const item = carrito.find(item => item.producto.id === idProducto && item.categoria === categoria);
     let cantidad = parseInt(cantidadSpan.textContent);
-    cantidad = Math.max(0, Math.min(item.cantidad, cantidad + cambio));
-    cantidadSpan.textContent = cantidad;
+    cantidad = Math.max(0, cantidad + cambio);
+
+    if (cambio > 0) {
+        item.cantidad += cambio;
+        mostrarNotificacion("Producto agregado al carrito", "#4CAF50");
+    } else if (cambio < 0 && item.cantidad === 1) {
+        Swal.fire({
+            title: '¿Eliminar producto?',
+            text: "¿Deseas eliminar este producto del carrito?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'No, mantener'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                eliminarProducto(idProducto, categoria);
+            } else {
+                cantidadSpan.textContent = 1;
+            }
+        });
+        return;
+    } else if (cambio < 0 && item.cantidad > 1) {
+        item.cantidad += cambio;
+        mostrarNotificacion("Producto eliminado del carrito", "#FFA500");
+    }
+
+    cantidadSpan.textContent = item.cantidad;
     localStorage.setItem("carrito", JSON.stringify(carrito));
+    mostrarCarrito();
 }
 
 function vaciarCarrito() {
-    localStorage.removeItem("carrito");
-    mostrarCarrito();
-    mostrarNotificacion("Carrito vaciado");
+    Swal.fire({
+        title: '¿Vaciar carrito?',
+        text: "¿Deseas vaciar el carrito?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, vaciar',
+        cancelButtonText: 'No, mantener'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.removeItem("carrito");
+            mostrarCarrito();
+            mostrarNotificacion("Carrito vaciado", "#FFA500");
+        }
+    });
 }
 
 function mostrarCarrito() {
@@ -67,7 +91,7 @@ function mostrarCarrito() {
             productoDiv.classList.add('producto');
             productoDiv.innerHTML = `
                 <div class="producto-imagen">
-                    <img src="../public/images/${item.producto.imagen}" alt="${item.producto.nombre}">
+                    <img src="../assets/images/${item.producto.imagen}" alt="${item.producto.nombre}">
                 </div>
                 <div class="producto-detalles">
                     <p class="producto-nombre">${item.producto.nombre} - $${item.producto.precio}</p>
@@ -75,7 +99,6 @@ function mostrarCarrito() {
                         <button class="cantidad-btn" onclick="cambiarCantidad(${item.producto.id}, '${item.categoria}', -1)">-</button>
                         <span id="cantidad-${item.categoria}-${item.producto.id}">${item.cantidad}</span>
                         <button class="cantidad-btn" onclick="cambiarCantidad(${item.producto.id}, '${item.categoria}', 1)">+</button>
-                        <button class="eliminar-btn" onclick="eliminarProducto(${item.producto.id}, '${item.categoria}')">Eliminar</button>
                     </div>
                 </div>
             `;
@@ -90,16 +113,21 @@ function mostrarCarrito() {
 }
 
 function agregarProducto(idProducto, categoria, cantidad = 1) {
-    const carrito = obtenerCarrito();
-    const item = carrito.find(item => item.producto.id === idProducto && item.categoria === categoria);
-    if (item) {
-        item.cantidad += cantidad;
-    } else {
-        const producto = { id: idProducto, nombre: "Producto", precio: 100, imagen: "imagen.jpg" }; 
-        carrito.push({ producto, categoria, cantidad });
+    try {
+        const carrito = obtenerCarrito();
+        const item = carrito.find(item => item.producto.id === idProducto && item.categoria === categoria);
+        if (item) {
+            item.cantidad += cantidad;
+        } else {
+            const producto = { id: idProducto, nombre: "Producto", precio: 100, imagen: "imagen.jpg" }; 
+            carrito.push({ producto, categoria, cantidad });
+        }
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        mostrarNotificacion("Producto agregado al carrito", "#4CAF50");
+    } catch (error) {
+        console.error('Error al agregar producto al carrito:', error);
+        mostrarNotificacion("Error al agregar producto al carrito. Inténtalo de nuevo.", "#FF0000");
     }
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-    mostrarNotificacion("Producto agregado al carrito");
 }
 
 document.querySelectorAll('.agregar-carrito-btn').forEach(button => {
@@ -110,21 +138,22 @@ document.querySelectorAll('.agregar-carrito-btn').forEach(button => {
     });
 });
 
-function mostrarNotificacion(mensaje) {
+function mostrarNotificacion(mensaje, color) {
     Toastify({
         text: mensaje,
         duration: 3000,
         gravity: "top",
         position: "right",
-        backgroundColor: "#4CAF50",
-        stopOnFocus: true
+        backgroundColor: color,
+        stopOnFocus: true,
+        close: true
     }).showToast();
 }
 
 function finalizarCompra() {
     const carrito = obtenerCarrito();
     if (carrito.length === 0) {
-        mostrarNotificacion("El carrito está vacío.");
+        mostrarNotificacion("El carrito está vacío.", "#FFA500");
         return;
     }
     cargarPaginaCompra();
@@ -190,7 +219,7 @@ if (checkoutButton) {
             document.getElementById("cart-items").innerHTML = "";
             cartTotal.textContent = "0";
         } else {
-            mostrarNotificacion("Por favor, completa todos los campos.");
+            mostrarNotificacion("Por favor, completa todos los campos.", "#FF0000");
         }
     });
 }
