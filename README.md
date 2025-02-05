@@ -30,21 +30,5 @@ TecStore es una aplicación de comercio electrónico que permite a los usuarios 
 - Toastify.js
 - SweetAlert2
 
-## Instalación
-1. Clona el repositorio.
-   ```bash
-   git clone https://github.com/tu-usuario/tecstore.git
-   ```
-2. Navega al directorio del proyecto.
-   ```bash
-   cd tecstore
-   ```
-3. Abre `index.html` en tu navegador.
-
-## Contribución
-Las contribuciones son bienvenidas. Por favor, abre un issue o envía un pull request para discutir cualquier cambio que desees realizar.
-
-## Licencia
-Este proyecto está licenciado bajo la Licencia MIT.
 
 
