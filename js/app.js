@@ -14,7 +14,7 @@ async function fetchProductos() {
     } catch (error) {
         Swal.fire({
             icon: 'error',
-            title: 'Error',
+            title: '',
             text: 'No se pudieron cargar los productos. Inténtalo de nuevo más tarde.'
         });
     }

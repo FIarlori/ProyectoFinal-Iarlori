@@ -149,7 +149,7 @@ document.getElementById('checkout-form').addEventListener('submit', (event) => {
         console.error('Error al procesar la compra:', error);
         Swal.fire({
             icon: 'error',
-            title: 'Datos Incompletos',
+            title: '',
             text: error.message
         });
     } 
