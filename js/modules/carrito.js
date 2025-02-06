@@ -56,7 +56,6 @@ function cambiarCantidad(idProducto, categoria, cambio) {
 
 function vaciarCarrito() {
     Swal.fire({
-        title: '¿Vaciar carrito?',
         text: "¿Deseas vaciar el carrito?",
         icon: 'warning',
         showCancelButton: true,
