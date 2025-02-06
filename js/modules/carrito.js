@@ -30,8 +30,8 @@ function cambiarCantidad(idProducto, categoria, cambio) {
         mostrarNotificacion("Producto agregado al carrito", "#4CAF50");
     } else if (cambio < 0 && item.cantidad === 1) {
         Swal.fire({
-            title: "",
-            text: "¿Deseas eliminar este producto del carrito?",
+            title: "¿Deseas eliminar este producto del carrito?",
+            text: "",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Sí, eliminar',
@@ -56,8 +56,8 @@ function cambiarCantidad(idProducto, categoria, cambio) {
 
 function vaciarCarrito() {
     Swal.fire({
-        title: "",
-        text: "¿Deseas vaciar el carrito?",
+        title: "¿Deseas vaciar el carrito?",
+        text: "",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí, vaciar',
