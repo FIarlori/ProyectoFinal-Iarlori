@@ -27,7 +27,7 @@ function calcularTotal(precio, cantidad, impuesto = 0.21) {
 function cambiarCantidad(idProducto, categoria, cambio) {
     const cantidadSpan = document.getElementById(`cantidad-${categoria}-${idProducto}`);
     let cantidad = parseInt(cantidadSpan.textContent);
-    cantidad = Math.max(1, cantidad + cambio); // Asegura que el valor mínimo sea 1
+    cantidad = Math.max(1, cantidad + cambio); 
     cantidadSpan.textContent = cantidad;
 }
 
