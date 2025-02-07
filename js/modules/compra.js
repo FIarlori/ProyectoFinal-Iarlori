@@ -53,6 +53,11 @@ document.getElementById('email').addEventListener('blur', (event) => {
     }
 });
 
+document.getElementById('numero-tarjeta').addEventListener('input', (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/\s+/g, '');
+});
+
 document.getElementById('numero-tarjeta').addEventListener('blur', (event) => {
     const input = event.target;
     if (!/^\d{14,19}$/.test(input.value.trim())) {
