@@ -44,6 +44,11 @@ document.getElementById('nombre').addEventListener('blur', (event) => {
 
 document.getElementById('email').setAttribute('type', 'text'); 
 
+document.getElementById('email').addEventListener('input', (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/\s+/g, '');
+});
+
 document.getElementById('email').addEventListener('blur', (event) => {
     const input = event.target;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim())) {
@@ -76,6 +81,11 @@ document.getElementById('nombre-tarjeta').addEventListener('blur', (event) => {
     }
 });
 
+document.getElementById('fecha-expiracion').addEventListener('input', (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/\s+/g, '');
+});
+
 document.getElementById('fecha-expiracion').addEventListener('blur', (event) => {
     const input = event.target;
     const [month, year] = input.value.trim().split('/');
@@ -91,6 +101,11 @@ document.getElementById('fecha-expiracion').addEventListener('blur', (event) => 
     }
 });
 
+document.getElementById('cvc-tarjeta').addEventListener('input', (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/\s+/g, '');
+});
+
 document.getElementById('cvc-tarjeta').addEventListener('blur', (event) => {
     const input = event.target;
     if (!/^\d{3,4}$/.test(input.value.trim())) {
@@ -98,6 +113,11 @@ document.getElementById('cvc-tarjeta').addEventListener('blur', (event) => {
     } else {
         limpiarMensajeError(input);
     }
+});
+
+document.getElementById('dni-tarjeta').addEventListener('input', (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/\s+/g, '');
 });
 
 document.getElementById('dni-tarjeta').addEventListener('blur', (event) => {
