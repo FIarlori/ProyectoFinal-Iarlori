@@ -24,7 +24,7 @@ function mostrarHistorialCompras() {
             compraDiv.classList.add('compra');
             compraDiv.innerHTML = `
                 <div class="compra-detalles">
-                    <p><strong>Productos:</strong>:</p>
+                    <p><strong>Productos:</strong></p>
                     ${productosComprados}
                     <p><strong>Fecha:</strong> ${compra.fecha}</p>
                     <p><strong>Total:</strong> $${compra.total.toFixed(2)}</p>
@@ -65,8 +65,6 @@ function verComprobante(index) {
                 <p><strong>Nombre:</strong> ${compra.nombre}</p>
                 <p><strong>Correo Electrónico:</strong> ${compra.email}</p>
                 <p><strong>Dirección:</strong> ${compra.direccion}</p>
-                <p><strong>Método de Pago:</strong> ${compra.paymentMethod === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}</p>
-                ${detallesTarjeta}
                 <p><strong>Productos:</strong></p>
                 ${productosComprados}
                 <p><strong>Total Pagado:</strong> $${compra.total.toFixed(2)}</p>

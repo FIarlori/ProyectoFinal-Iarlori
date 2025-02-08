@@ -218,8 +218,6 @@ function mostrarComprobante(nombre, email, direccion, paymentMethod, datosTarjet
                 <p><strong>Nombre:</strong> ${nombre}</p>
                 <p><strong>Correo Electrónico:</strong> ${email}</p>
                 <p><strong>Dirección:</strong> ${direccion}</p>
-                <p><strong>Método de Pago:</strong> ${paymentMethod === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}</p>
-                ${detallesTarjeta}
                 <p><strong>Productos:</strong>
                 ${productosComprados}
                 <p><strong>Total Pagado:</strong> $${total.toFixed(2)}</p>
