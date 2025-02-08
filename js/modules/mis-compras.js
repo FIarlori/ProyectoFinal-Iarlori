@@ -28,7 +28,6 @@ function mostrarHistorialCompras() {
                     ${productosComprados}
                     <p><strong>Fecha:</strong> ${compra.fecha}</p>
                     <p><strong>Total:</strong> $${compra.total.toFixed(2)}</p>
-                    
                 </div>
                 <div class="boton-comprobante">
                     <button onclick="verComprobante(${index})">Ver Comprobante</button>
@@ -65,10 +64,13 @@ function verComprobante(index) {
                 <p><strong>Nombre:</strong> ${compra.nombre}</p>
                 <p><strong>Correo Electrónico:</strong> ${compra.email}</p>
                 <p><strong>Dirección:</strong> ${compra.direccion}</p>
+                <p><strong>Método de Pago:</strong> ${compra.paymentMethod === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}</p>
+                ${detallesTarjeta}
                 <p><strong>Productos:</strong></p>
                 ${productosComprados}
                 <p><strong>Total Pagado:</strong> $${compra.total.toFixed(2)}</p>
                 <button onclick="cerrarComprobante()" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar</button>
+                <button onclick="descargarComprobante('${compra.nombre}', '${compra.email}', '${compra.direccion}', '${compra.paymentMethod}', '${compra.total}', \`${productosComprados}\`)" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Descargar</button>
             </div>
         </div>
     `;
@@ -83,4 +85,41 @@ function cerrarComprobante() {
     if (comprobanteDiv) {
         comprobanteDiv.remove();
     }
+}
+
+function descargarComprobante(nombre, email, direccion, paymentMethod, total, productosComprados) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("Comprobante de Compra", 20, 20);
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Nombre: ${nombre}`, 20, 30);
+    doc.text(`Correo Electrónico: ${email}`, 20, 40);
+    doc.text(`Dirección: ${direccion}`, 20, 50);
+    doc.text(`Método de Pago: ${paymentMethod === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}`, 20, 60);
+
+    doc.setLineWidth(0.5);
+    doc.line(20, 70, 190, 70);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Productos:", 20, 80);
+    doc.setFont("helvetica", "normal");
+
+    const productosArray = productosComprados.split('</p>').map(producto => producto.replace('<p>', '').trim());
+    productosArray.forEach((producto, index) => {
+        doc.text(producto, 20, 90 + (index * 10));
+    });
+
+    const lineaY = 90 + (productosArray.length * 10);
+    doc.setLineWidth(0.5);
+    doc.line(20, lineaY, 190, lineaY);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Total Pagado: $${total}`, 20, lineaY + 10 );
+
+    doc.save('comprobante.pdf');
 }

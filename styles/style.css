@@ -148,7 +148,7 @@ main {
     margin-top: 10px;
 }
 
-.producto .descripcion h3 {
+.producto .descripcion p {
     margin: 0;
     font-size: 1.2em;
 }
