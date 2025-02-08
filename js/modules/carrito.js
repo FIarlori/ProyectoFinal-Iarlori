@@ -125,8 +125,11 @@ function agregarProducto(idProducto, categoria, cantidad = 1) {
         localStorage.setItem("carrito", JSON.stringify(carrito));
         mostrarNotificacion("Producto agregado al carrito", "#4CAF50");
     } catch (error) {
-        console.error('Error al agregar producto al carrito:', error);
-        mostrarNotificacion("Error al agregar producto al carrito. Inténtalo de nuevo.", "#FF0000");
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al agregar producto al carrito',
+            text: error.message
+        });
     }
 }
 
@@ -167,7 +170,13 @@ function cargarPaginaCompra() {
             document.write(html);
             document.close();
         })
-        .catch(error => console.error('Error al cargar la página de compra:', error));
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al cargar la página de compra',
+                text: error.message
+            });
+        });
 }
 
 function inicializarCarrito() {
