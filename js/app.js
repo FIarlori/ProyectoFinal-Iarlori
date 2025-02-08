@@ -60,19 +60,14 @@ function agregarProductoAlCarrito(idProducto, categoria) {
 }
 
 function mostrarCarrito() {
-    const carritoDiv = document.getElementById('carrito');
-    carritoDiv.innerHTML = '';
     let totalGeneral = 0;
 
     carrito.forEach(item => {
         const totalProducto = calcularTotal(item.producto.precio, item.cantidad);
-        const productoDiv = document.createElement('div');
-        productoDiv.textContent = `${item.cantidad} x ${item.producto.nombre} - Total: $${totalProducto.toFixed(2)}`;
-        carritoDiv.appendChild(productoDiv);
+
         totalGeneral += totalProducto;
     });
 
-    document.getElementById('total-carrito').textContent = `Total (incluye IVA 21%): $${totalGeneral.toFixed(2)}`;
 }
 
 function aplicarFiltros(productos) {
@@ -194,4 +189,6 @@ function mostrarNotificacion(mensaje) {
     }).showToast();
 }
 
-inicializar();
+(function() {
+    inicializar();
+})();

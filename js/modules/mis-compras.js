@@ -65,10 +65,10 @@ function verComprobante(index) {
                 <p><strong>Correo Electrónico:</strong> ${compra.email}</p>
                 <p><strong>Dirección:</strong> ${compra.direccion}</p>
                 <p><strong>Método de Pago:</strong> ${compra.paymentMethod === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}</p>
-                ${detallesTarjeta}
                 <p><strong>Productos:</strong></p>
                 ${productosComprados}
                 <p><strong>Total Pagado:</strong> $${compra.total.toFixed(2)}</p>
+                <div style="height: 30px;"></div>
                 <button onclick="cerrarComprobante()" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar</button>
                 <button onclick="descargarComprobante('${compra.nombre}', '${compra.email}', '${compra.direccion}', '${compra.paymentMethod}', '${compra.total}', \`${productosComprados}\`)" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Descargar</button>
             </div>

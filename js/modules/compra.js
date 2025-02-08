@@ -166,7 +166,6 @@ function procesarCompra() {
             Swal.fire({
                 icon: 'success',
                 title: '¡Gracias por tu compra!',
-                text: `Un resumen ha sido enviado a ${email}.`,
                 showConfirmButton: true,
                 allowOutsideClick: true
             }).then(() => {
@@ -222,6 +221,7 @@ function mostrarComprobante(nombre, email, direccion, paymentMethod, datosTarjet
                 <p><strong>Productos:</strong></p>
                 ${productosComprados}
                 <p><strong>Total Pagado:</strong> $${total.toFixed(2)}</p>
+                <div style="height: 30px;"></div>
                 <button onclick="cerrarComprobanteYRedirigir()" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar</button>
                 <button onclick="descargarComprobante('${nombre}', '${email}', '${direccion}', '${paymentMethod}', '${total}', \`${productosComprados}\`)" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Descargar</button>
             </div>
