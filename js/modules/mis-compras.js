@@ -17,7 +17,7 @@ function mostrarHistorialCompras() {
     } else {
         historialCompras.reverse().forEach((compra, index) => {
             const productosComprados = compra.carrito.map(item => `
-                <p>${item.producto.nombre} - ${item.cantidad} x $${item.producto.precio.toFixed(2)}</p>
+                <li>${item.producto.nombre} - ${item.cantidad} x $${item.producto.precio.toFixed(2)}</li>
             `).join('');
 
             const compraDiv = document.createElement('div');
@@ -25,12 +25,16 @@ function mostrarHistorialCompras() {
             compraDiv.innerHTML = `
                 <div class="compra-detalles">
                     <p><strong>Productos:</strong></p>
-                    ${productosComprados}
-                    <p><strong>Fecha:</strong> ${compra.fecha}</p>
-                    <p><strong>Total:</strong> $${compra.total.toFixed(2)}</p>
+                    <ul>${productosComprados}</ul>
                 </div>
-                <div class="boton-comprobante">
-                    <button onclick="verComprobante(${index})">Ver Comprobante</button>
+                <div class="compra-info">
+                    <div class="fecha-total">
+                        <p><strong>Fecha:</strong> ${compra.fecha}</p>
+                        <p><strong>Total:</strong> $${compra.total.toFixed(2)}</p>
+                    </div>
+                    <div class="boton-comprobante">
+                        <button onclick="verComprobante(${historialCompras.length - 1 - index})">Ver Comprobante</button>
+                    </div>
                 </div>
             `;
             listaComprasDiv.appendChild(compraDiv);
@@ -54,7 +58,7 @@ function verComprobante(index) {
     }
 
     const productosComprados = compra.carrito.map(item => `
-        <p>${item.producto.nombre} - ${item.cantidad} x $${item.producto.precio.toFixed(2)}</p>
+        <li>${item.producto.nombre} - ${item.cantidad} x $${item.producto.precio.toFixed(2)}</li>
     `).join('');
 
     const comprobanteHTML = `
@@ -66,7 +70,7 @@ function verComprobante(index) {
                 <p><strong>Dirección:</strong> ${compra.direccion}</p>
                 <p><strong>Método de Pago:</strong> ${compra.paymentMethod === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}</p>
                 <p><strong>Productos:</strong></p>
-                ${productosComprados}
+                <ul style="text-align: left;">${productosComprados}</ul>
                 <p><strong>Total Pagado:</strong> $${compra.total.toFixed(2)}</p>
                 <div style="height: 30px;"></div>
                 <button onclick="cerrarComprobante()" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar</button>
@@ -109,9 +113,9 @@ function descargarComprobante(nombre, email, direccion, paymentMethod, total, pr
     doc.text("Productos:", 20, 80);
     doc.setFont("helvetica", "normal");
 
-    const productosArray = productosComprados.split('</p>').map(producto => producto.replace('<p>', '').trim());
+    const productosArray = productosComprados.split('</li>').filter(producto => producto.trim() !== '').map(producto => producto.replace('<li>', '').trim());
     productosArray.forEach((producto, index) => {
-        doc.text(producto, 20, 90 + (index * 10));
+        doc.text(`• ${producto}`, 20, 90 + (index * 10));
     });
 
     const lineaY = 90 + (productosArray.length * 10);

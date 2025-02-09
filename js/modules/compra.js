@@ -36,7 +36,7 @@ function limpiarMensajeError(input) {
 document.getElementById('nombre').addEventListener('blur', (event) => {
     const input = event.target;
     if (!/^[a-zA-Z\s]+$/.test(input.value)) {
-        mostrarMensajeError(input, 'El nombre solo debe contener letras.');
+        mostrarMensajeError(input, 'Campo requerido. El nombre solo debe contener letras.');
     } else {
         limpiarMensajeError(input);
     }
@@ -50,7 +50,7 @@ document.getElementById('email').addEventListener('input', (event) => {
 document.getElementById('email').addEventListener('blur', (event) => {
     const input = event.target;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
-        mostrarMensajeError(input, 'El correo electrónico debe tener un formato válido.');
+        mostrarMensajeError(input, 'Campo requerido. El correo electrónico debe tener un formato válido.');
     } else {
         limpiarMensajeError(input);
     }
@@ -64,7 +64,7 @@ document.getElementById('numero-tarjeta').addEventListener('input', (event) => {
 document.getElementById('numero-tarjeta').addEventListener('blur', (event) => {
     const input = event.target;
     if (!/^\d{14,19}$/.test(input.value)) {
-        mostrarMensajeError(input, 'El número de tarjeta debe tener entre 14 y 19 dígitos.');
+        mostrarMensajeError(input, 'Campo requerido. El número de tarjeta debe tener entre 14 y 19 dígitos.');
     } else {
         limpiarMensajeError(input);
     }
@@ -73,7 +73,7 @@ document.getElementById('numero-tarjeta').addEventListener('blur', (event) => {
 document.getElementById('nombre-tarjeta').addEventListener('blur', (event) => {
     const input = event.target;
     if (!/^[a-zA-Z\s]+$/.test(input.value)) {
-        mostrarMensajeError(input, 'El nombre solo debe contener letras.');
+        mostrarMensajeError(input, 'Campo requerido. El nombre solo debe contener letras.');
     } else {
         limpiarMensajeError(input);
     }
@@ -87,7 +87,7 @@ document.getElementById('fecha-expiracion').addEventListener('input', (event) =>
 document.getElementById('fecha-expiracion').addEventListener('blur', (event) => {
     const input = event.target;
     if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(input.value)) {
-        mostrarMensajeError(input, 'La fecha de vencimiento debe tener el formato mm/yy.');
+        mostrarMensajeError(input, 'Campo requerido. La fecha de vencimiento debe tener el formato mm/yy.');
     } else {
         limpiarMensajeError(input);
     }
@@ -101,7 +101,7 @@ document.getElementById('cvc-tarjeta').addEventListener('input', (event) => {
 document.getElementById('cvc-tarjeta').addEventListener('blur', (event) => {
     const input = event.target;
     if (!/^\d{3,4}$/.test(input.value)) {
-        mostrarMensajeError(input, 'El código de seguridad debe tener entre 3 y 4 dígitos.');
+        mostrarMensajeError(input, 'Campo requerido. El código de seguridad debe tener entre 3 y 4 dígitos.');
     } else {
         limpiarMensajeError(input);
     }
@@ -115,7 +115,7 @@ document.getElementById('dni-tarjeta').addEventListener('input', (event) => {
 document.getElementById('dni-tarjeta').addEventListener('blur', (event) => {
     const input = event.target;
     if (!/^\d{7,10}$/.test(input.value)) {
-        mostrarMensajeError(input, 'El DNI debe tener entre 7 y 10 dígitos.');
+        mostrarMensajeError(input, 'Campo requerido. El DNI debe tener entre 7 y 10 dígitos.');
     } else {
         limpiarMensajeError(input);
     }
@@ -183,13 +183,14 @@ function procesarCompra() {
                 mostrarComprobante(nombre, email, direccion, paymentMethod, datosTarjeta, totalGeneral, carrito);
             });
         } else {
-            throw new Error(`Por favor, completa los siguientes campos: ${camposIncompletos.join(', ')}`);
+            const camposIncompletosHTML = camposIncompletos.map(campo => `<li style="text-align: left;">${campo}</li>`).join('');
+            throw new Error(`Por favor, completa los siguientes campos:<ul style="text-align: left;">${camposIncompletosHTML}</ul>`);
         }
     } catch (error) {
         Swal.fire({
             icon: 'error',
             title: 'Error al procesar la compra',
-            text: error.message
+            html: error.message
         });
     }
 }
@@ -207,7 +208,7 @@ function mostrarComprobante(nombre, email, direccion, paymentMethod, datosTarjet
     }
 
     const productosComprados = carrito.map(item => `
-        <p>${item.producto.nombre} - ${item.cantidad} x $${item.producto.precio.toFixed(2)}</p>
+        <li>${item.producto.nombre} - ${item.cantidad} x $${item.producto.precio.toFixed(2)}</li>
     `).join('');
 
     const comprobanteHTML = `
@@ -219,7 +220,7 @@ function mostrarComprobante(nombre, email, direccion, paymentMethod, datosTarjet
                 <p><strong>Dirección:</strong> ${direccion}</p>
                 <p><strong>Método de Pago:</strong> ${paymentMethod === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}</p>
                 <p><strong>Productos:</strong></p>
-                ${productosComprados}
+                <ul style="text-align: left;">${productosComprados}</ul>
                 <p><strong>Total Pagado:</strong> $${total.toFixed(2)}</p>
                 <div style="height: 30px;"></div>
                 <button onclick="cerrarComprobanteYRedirigir()" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar</button>
@@ -267,9 +268,9 @@ function descargarComprobante(nombre, email, direccion, paymentMethod, total, pr
     doc.text("Productos:", 20, 80);
     doc.setFont("helvetica", "normal");
 
-    const productosArray = productosComprados.split('</p>').map(producto => producto.replace('<p>', '').trim());
+    const productosArray = productosComprados.split('</li>').filter(producto => producto.trim() !== '').map(producto => producto.replace('<li>', '').trim());
     productosArray.forEach((producto, index) => {
-        doc.text(producto, 20, 90 + (index * 10));
+        doc.text(`• ${producto}`, 20, 90 + (index * 10));
     });
 
     const lineaY = 90 + (productosArray.length * 10);

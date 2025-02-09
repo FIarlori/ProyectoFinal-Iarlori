@@ -495,27 +495,52 @@ footer {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: flex-start; 
     height: auto;
     margin-bottom: 20px;
-    width: 500px;
+    width: 620px;
     max-width: 1000px;
 }
 
 .compra .compra-detalles {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start; 
     text-align: left; 
 }
 
 .compra .compra-detalles p {
-    margin: 5px 0;
     font-size: 1em;
+    height: 10px;
+    margin-top: 0;
+}
+
+.compra .compra-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    align-items: flex-start; 
+    width: 250px;
+    margin-top: 0;
+}
+
+.compra .compra-info .fecha-total {
+    text-align: left; 
+    margin-bottom: auto; 
+    margin-top: 0; /* Ensure it stays at the top */
+}
+
+.compra .compra-info p {
+    font-size: 1em;
+    height: 10px;
+    margin-top: 0;
 }
 
 .boton-comprobante {
     display: flex;
     align-items: center;
+    margin-bottom: 0; /* Ensure it stays at the top */
+
 }
 
 .boton-comprobante button {
@@ -527,4 +552,9 @@ footer {
 #finalizarCompraBtn {
     margin-right: 10px;
 }
+
+.compra .compra-info .fecha-total {
+    text-align: left; 
+}
+
 
