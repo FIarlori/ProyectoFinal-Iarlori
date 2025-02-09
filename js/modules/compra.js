@@ -35,7 +35,7 @@ function limpiarMensajeError(input) {
 
 document.getElementById('nombre').addEventListener('blur', (event) => {
     const input = event.target;
-    if (!/^[a-zA-Z\s]+$/.test(input.value)) {
+    if (!/^[a-zA-Z\s]+$/.test(input.value.trim())) {
         mostrarMensajeError(input, 'Campo requerido. El nombre solo debe contener letras.');
     } else {
         limpiarMensajeError(input);
@@ -72,7 +72,7 @@ document.getElementById('numero-tarjeta').addEventListener('blur', (event) => {
 
 document.getElementById('nombre-tarjeta').addEventListener('blur', (event) => {
     const input = event.target;
-    if (!/^[a-zA-Z\s]+$/.test(input.value)) {
+    if (!/^[a-zA-Z\s]+$/.test(input.value.trim())) {
         mostrarMensajeError(input, 'Campo requerido. El nombre solo debe contener letras.');
     } else {
         limpiarMensajeError(input);
@@ -148,13 +148,13 @@ document.getElementById('checkout-form').addEventListener('submit', (event) => {
 
 function procesarCompra() {
     try {
-        const nombre = document.getElementById("nombre").value;
-        const email = document.getElementById("email").value;
-        const direccion = document.getElementById("direccion").value;
+        const nombre = document.getElementById("nombre").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const direccion = document.getElementById("direccion").value.trim();
         const paymentMethod = metodoDePago.value;
         const datosTarjeta = Array.from(datosTarjetaDiv.querySelectorAll('input')).map(input => ({
             nombre: input.previousElementSibling.textContent.replace(':', ''),
-            value: input.value
+            value: input.value.trim()
         }));
 
         let camposIncompletos = [];
