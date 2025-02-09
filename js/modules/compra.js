@@ -121,6 +121,15 @@ document.getElementById('dni-tarjeta').addEventListener('blur', (event) => {
     }
 });
 
+document.getElementById('direccion').addEventListener('blur', (event) => {
+    const input = event.target;
+    if (!input.value.trim()) {
+        mostrarMensajeError(input, 'Campo requerido.');
+    } else {
+        limpiarMensajeError(input);
+    }
+});
+
 document.getElementById('checkout-form').addEventListener('submit', (event) => {
     event.preventDefault();
     Swal.fire({
@@ -151,7 +160,7 @@ function procesarCompra() {
         let camposIncompletos = [];
         if (!/^[a-zA-Z\s]+$/.test(nombre)) camposIncompletos.push('Nombre');
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) camposIncompletos.push('Correo Electrónico');
-        if (!direccion) camposIncompletos.push('Dirección');
+        if (!direccion.trim()) camposIncompletos.push('Dirección');
         if (paymentMethod === 'tarjeta') {
             datosTarjeta.forEach(dato => {
                 if (dato.nombre === 'Número de tarjeta' && !/^\d{14,19}$/.test(dato.value)) camposIncompletos.push(dato.nombre);
