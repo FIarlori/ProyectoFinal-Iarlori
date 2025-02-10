@@ -252,7 +252,7 @@ footer {
 }
 
 #total-carrito {
-    font-size: 1.5em;
+    font-size: 1.0em;
     font-weight: bold;
     color: #121254;
     margin-top: 20px;
@@ -527,7 +527,7 @@ footer {
 .compra .compra-info .fecha-total {
     text-align: left; 
     margin-bottom: auto; 
-    margin-top: 0; /* Ensure it stays at the top */
+    margin-top: 0;
 }
 
 .compra .compra-info p {
@@ -539,7 +539,7 @@ footer {
 .boton-comprobante {
     display: flex;
     align-items: center;
-    margin-bottom: 0; /* Ensure it stays at the top */
+    margin-bottom: 0;
 
 }
 

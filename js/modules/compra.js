@@ -50,7 +50,7 @@ document.getElementById('email').addEventListener('input', (event) => {
 document.getElementById('email').addEventListener('blur', (event) => {
     const input = event.target;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
-        mostrarMensajeError(input, 'Campo requerido. El correo electrónico debe tener un formato válido.');
+        mostrarMensajeError(input, 'Campo requerido. Por favor ingresa un correo electrónico válido.');
     } else {
         limpiarMensajeError(input);
     }
@@ -86,8 +86,14 @@ document.getElementById('fecha-expiracion').addEventListener('input', (event) =>
 
 document.getElementById('fecha-expiracion').addEventListener('blur', (event) => {
     const input = event.target;
+    const [month, year] = input.value.split('/');
+    const currentDate = new Date();
+    const inputDate = new Date(`20${year}`, month - 1);
+
     if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(input.value)) {
         mostrarMensajeError(input, 'Campo requerido. La fecha de vencimiento debe tener el formato mm/yy.');
+    } else if (inputDate < currentDate) {
+        mostrarMensajeError(input, 'La fecha de vencimiento ingresada ha expirado. Por favor, ingrese una fecha válida.');
     } else {
         limpiarMensajeError(input);
     }
@@ -165,7 +171,14 @@ function procesarCompra() {
             datosTarjeta.forEach(dato => {
                 if (dato.nombre === 'Número de tarjeta' && !/^\d{14,19}$/.test(dato.value)) camposIncompletos.push(dato.nombre);
                 if (dato.nombre === 'Nombre y apellido del titular' && !/^[a-zA-Z\s]+$/.test(dato.value)) camposIncompletos.push(dato.nombre);
-                if (dato.nombre === 'Fecha de vencimiento' && !/^(0[1-9]|1[0-2])\/\d{2}$/.test(dato.value)) camposIncompletos.push(dato.nombre);
+                if (dato.nombre === 'Fecha de vencimiento') {
+                    const [month, year] = dato.value.split('/');
+                    const currentDate = new Date();
+                    const inputDate = new Date(`20${year}`, month - 1);
+                    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(dato.value) || inputDate < currentDate) {
+                        camposIncompletos.push(dato.nombre);
+                    }
+                }
                 if (dato.nombre === 'Código de seguridad' && !/^\d{3,4}$/.test(dato.value)) camposIncompletos.push(dato.nombre);
                 if (dato.nombre === 'DNI del titular de la tarjeta' && !/^\d{7,10}$/.test(dato.value)) camposIncompletos.push(dato.nombre);
             });
@@ -232,7 +245,7 @@ function mostrarComprobante(nombre, email, direccion, paymentMethod, datosTarjet
                 <p><strong>Método de Pago:</strong> ${paymentMethod === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}</p>
                 <p><strong>Productos:</strong></p>
                 <ul style="text-align: left;">${productosComprados}</ul>
-                <p><strong>Total Pagado:</strong> $${total.toFixed(2)}</p>
+                <p><strong>Total:</strong> $${total.toFixed(2)}</p>
                 <div style="height: 30px;"></div>
                 <button onclick="cerrarComprobanteYRedirigir()" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar</button>
                 <button onclick="descargarComprobante('${nombre}', '${email}', '${direccion}', '${paymentMethod}', '${total}', \`${productosComprados}\`, '${fechaCompra}')" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Descargar</button>
@@ -290,7 +303,7 @@ function descargarComprobante(nombre, email, direccion, paymentMethod, total, pr
     doc.line(20, lineaY, 190, lineaY);
 
     doc.setFont("helvetica", "bold");
-    doc.text(`Total Pagado: $${total}`, 20, lineaY + 10 );
+    doc.text(`Total: $${total}`, 20, lineaY + 10 );
 
     doc.save('comprobante.pdf');
 }

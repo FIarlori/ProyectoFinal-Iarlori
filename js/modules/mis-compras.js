@@ -72,7 +72,7 @@ function verComprobante(index) {
                 <p><strong>Método de Pago:</strong> ${compra.paymentMethod === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}</p>
                 <p><strong>Productos:</strong></p>
                 <ul style="text-align: left;">${productosComprados}</ul>
-                <p><strong>Total Pagado:</strong> $${compra.total.toFixed(2)}</p>
+                <p><strong>Total:</strong> $${compra.total.toFixed(2)}</p>
                 <div style="height: 30px;"></div>
                 <button onclick="cerrarComprobante()" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar</button>
                 <button onclick="descargarComprobante('${compra.nombre}', '${compra.email}', '${compra.direccion}', '${compra.paymentMethod}', '${compra.total}', \`${productosComprados}\`, '${compra.fecha}')" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Descargar</button>
@@ -125,7 +125,7 @@ function descargarComprobante(nombre, email, direccion, paymentMethod, total, pr
     doc.line(20, lineaY, 190, lineaY);
 
     doc.setFont("helvetica", "bold");
-    doc.text(`Total Pagado: $${total}`, 20, lineaY + 10 );
+    doc.text(`Total: $${total}`, 20, lineaY + 10 );
 
     doc.save('comprobante.pdf');
 }
