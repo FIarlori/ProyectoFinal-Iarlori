@@ -2,27 +2,19 @@ let productos = [];
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 let filtros = { categorias: [], precio: null };
 
-async function fetchProductos() {
-    try {
-        const response = await fetch('./db/productos.json');
-        if (!response.ok) {
-            throw new Error('Error al cargar los productos');
-        }
-        const data = await response.json();
-        productos = data;
-        mostrarProductos(productos);
-    } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: '',
-            text: 'No se pudieron cargar los productos. Inténtalo de nuevo más tarde.'
-        });
-    }
+
+function mostrarNotificacion(mensaje) {
+    Toastify({
+        text: mensaje,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "#4CAF50",
+        stopOnFocus: true,
+        close: true
+    }).showToast();
 }
 
-function calcularTotal(precio, cantidad, impuesto = 0.21) {
-    return precio * cantidad * (1 + impuesto);
-}
 
 function cambiarCantidad(idProducto, categoria, cambio) {
     const cantidadSpan = document.getElementById(`cantidad-${categoria}-${idProducto}`);
@@ -30,6 +22,7 @@ function cambiarCantidad(idProducto, categoria, cambio) {
     cantidad = Math.max(1, cantidad + cambio); 
     cantidadSpan.textContent = cantidad;
 }
+
 
 function agregarProductoAlCarrito(idProducto, categoria) {
     const productoSeleccionado = productos.find(p => p.id === idProducto && p.categoria === categoria);
@@ -55,45 +48,9 @@ function agregarProductoAlCarrito(idProducto, categoria) {
     }
 
     localStorage.setItem("carrito", JSON.stringify(carrito));
-    mostrarCarrito();
     mostrarNotificacion("Producto agregado al carrito");
 }
 
-function mostrarCarrito() {
-    let totalGeneral = 0;
-
-    carrito.forEach(item => {
-        const totalProducto = calcularTotal(item.producto.precio, item.cantidad);
-
-        totalGeneral += totalProducto;
-    });
-
-}
-
-function aplicarFiltros(productos) {
-    let productosFiltrados = productos.slice();
-
-    if (filtros.categorias.length > 0) {
-        productosFiltrados = productosFiltrados.filter(producto => filtros.categorias.includes(producto.categoria));
-    }
-
-    switch (filtros.precio) {
-        case 'asc':
-            productosFiltrados.sort((a, b) => a.precio - b.precio);
-            break;
-        case 'desc':
-            productosFiltrados.sort((a, b) => b.precio - a.precio);
-            break;
-    }
-
-    return productosFiltrados;
-}
-
-function buscarProductos(termino) {
-    let productosFiltrados = productos.filter(producto => producto.nombre.toLowerCase().includes(termino.toLowerCase()));
-    productosFiltrados = aplicarFiltros(productosFiltrados);
-    mostrarProductos(productosFiltrados);
-}
 
 function mostrarProductos(productos) {
     const appDiv = document.getElementById('app');
@@ -128,8 +85,60 @@ function mostrarProductos(productos) {
     });
 }
 
+
+async function fetchProductos() {
+    try {
+        const response = await fetch('./db/productos.json');
+        if (!response.ok) {
+            throw new Error('Error al cargar los productos');
+        }
+        const data = await response.json();
+        productos = data;
+        mostrarProductos(productos);
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: '',
+            text: 'No se pudieron cargar los productos. Inténtalo de nuevo más tarde.'
+        });
+    }
+}
+
+
+function aplicarFiltros(productos) {
+    let productosFiltrados = productos.slice();
+
+    if (filtros.categorias.length > 0) {
+        productosFiltrados = productosFiltrados.filter(producto => filtros.categorias.includes(producto.categoria));
+    }
+
+    switch (filtros.precio) {
+        case 'asc':
+            productosFiltrados.sort((a, b) => a.precio - b.precio);
+            break;
+        case 'desc':
+            productosFiltrados.sort((a, b) => b.precio - a.precio);
+            break;
+    }
+
+    return productosFiltrados;
+}
+
+
+function actualizarFiltros() {
+    const productosFiltrados = aplicarFiltros(productos.slice());
+    mostrarProductos(productosFiltrados);
+}
+
+
+function buscarProductos(palabra) {
+    let productosFiltrados = productos.filter(producto => producto.nombre.toLowerCase().includes(palabra.toLowerCase()));
+    productosFiltrados = aplicarFiltros(productosFiltrados);
+    mostrarProductos(productosFiltrados);
+}
+
+
 function inicializar() {
-    document.getElementById('verCarritoBtn').addEventListener('click', mostrarCarrito);
     document.getElementById('menu-icon').addEventListener('click', () => document.getElementById('dropdown-menu').classList.toggle('show'));
 
     document.getElementById('buscarBtn').addEventListener('click', () => {
@@ -169,25 +178,8 @@ function inicializar() {
     });
 
     fetchProductos();
-    mostrarCarrito();
 }
 
-function actualizarFiltros() {
-    const productosFiltrados = aplicarFiltros(productos.slice());
-    mostrarProductos(productosFiltrados);
-}
-
-function mostrarNotificacion(mensaje) {
-    Toastify({
-        text: mensaje,
-        duration: 3000,
-        gravity: "top",
-        position: "right",
-        backgroundColor: "#4CAF50",
-        stopOnFocus: true,
-        close: true
-    }).showToast();
-}
 
 (function() {
     inicializar();

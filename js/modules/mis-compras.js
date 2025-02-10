@@ -47,7 +47,7 @@ function verComprobante(index) {
     const compra = historialCompras[index];
 
     let detallesTarjeta = '';
-    if (compra.paymentMethod === 'tarjeta') {
+    if (compra.metodoPago === 'tarjeta') {
         detallesTarjeta = `
             <p><strong>Número de tarjeta:</strong> ${compra.datosTarjeta.find(dato => dato.nombre === 'Número de tarjeta').value}</p>
             <p><strong>Nombre del titular:</strong> ${compra.datosTarjeta.find(dato => dato.nombre === 'Nombre y apellido del titular').value}</p>
@@ -69,13 +69,13 @@ function verComprobante(index) {
                 <p><strong>Correo Electrónico:</strong> ${compra.email}</p>
                 <p><strong>Dirección:</strong> ${compra.direccion}</p>
                 <p><strong>Fecha:</strong> ${compra.fecha}</p>
-                <p><strong>Método de Pago:</strong> ${compra.paymentMethod === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}</p>
+                <p><strong>Método de Pago:</strong> ${compra.metodoPago === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}</p>
                 <p><strong>Productos:</strong></p>
                 <ul style="text-align: left;">${productosComprados}</ul>
                 <p><strong>Total:</strong> $${compra.total.toFixed(2)}</p>
                 <div style="height: 30px;"></div>
                 <button onclick="cerrarComprobante()" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar</button>
-                <button onclick="descargarComprobante('${compra.nombre}', '${compra.email}', '${compra.direccion}', '${compra.paymentMethod}', '${compra.total}', \`${productosComprados}\`, '${compra.fecha}')" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Descargar</button>
+                <button onclick="descargarComprobante('${compra.nombre}', '${compra.email}', '${compra.direccion}', '${compra.metodoPago}', '${compra.total}', \`${productosComprados}\`, '${compra.fecha}')" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Descargar</button>
             </div>
         </div>
     `;
@@ -92,7 +92,7 @@ function cerrarComprobante() {
     }
 }
 
-function descargarComprobante(nombre, email, direccion, paymentMethod, total, productosComprados, fechaCompra) {
+function descargarComprobante(nombre, email, direccion, metodoPago, total, productosComprados, fechaCompra) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
@@ -106,7 +106,7 @@ function descargarComprobante(nombre, email, direccion, paymentMethod, total, pr
     doc.text(`Correo Electrónico: ${email}`, 20, 40);
     doc.text(`Dirección: ${direccion}`, 20, 50);
     doc.text(`Fecha: ${fechaCompra}`, 20, 60);
-    doc.text(`Método de Pago: ${paymentMethod === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}`, 20, 70);
+    doc.text(`Método de Pago: ${metodoPago === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}`, 20, 70);
 
     doc.setLineWidth(0.5);
     doc.line(20, 80, 190, 80);

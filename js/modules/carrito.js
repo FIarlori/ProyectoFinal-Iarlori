@@ -2,9 +2,24 @@ function obtenerCarrito() {
     return JSON.parse(localStorage.getItem("carrito")) || [];
 }
 
+
 function calcularTotal(precio, cantidad, impuesto = 0.21) {
     return precio * cantidad * (1 + impuesto);
 }
+
+
+function mostrarNotificacion(mensaje, color) {
+    Toastify({
+        text: mensaje,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: color,
+        stopOnFocus: true,
+        close: true
+    }).showToast();
+}
+
 
 function eliminarProducto(idProducto, categoria) {
     const carrito = obtenerCarrito();
@@ -25,28 +40,33 @@ function cambiarCantidad(idProducto, categoria, cambio) {
     let cantidad = parseInt(cantidadSpan.textContent);
     cantidad = Math.max(0, cantidad + cambio);
 
-    if (cambio > 0) {
-        item.cantidad += cambio;
-        mostrarNotificacion("Producto agregado al carrito", "#4CAF50");
-    } else if (cambio < 0 && item.cantidad === 1) {
-        Swal.fire({
-            title: "¿Deseas eliminar este producto del carrito?",
-            text: "",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'No, mantener'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                eliminarProducto(idProducto, categoria);
-            } else {
-                cantidadSpan.textContent = 1;
-            }
-        });
-        return;
-    } else if (cambio < 0 && item.cantidad > 1) {
-        item.cantidad += cambio;
-        mostrarNotificacion("Producto eliminado del carrito", "#FFA500");
+    switch (true) {
+        case cambio > 0:
+            item.cantidad += cambio;
+            mostrarNotificacion("Producto agregado al carrito", "#4CAF50");
+            break;
+
+        case cambio < 0 && item.cantidad === 1:
+            Swal.fire({
+                title: "¿Deseas eliminar este producto del carrito?",
+                text: "",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'No, mantener'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    eliminarProducto(idProducto, categoria);
+                } else {
+                    cantidadSpan.textContent = 1;
+                }
+            });
+            return; 
+
+        case cambio < 0 && item.cantidad > 1:
+            item.cantidad += cambio;
+            mostrarNotificacion("Producto eliminado del carrito", "#FFA500");
+            break;
     }
 
     cantidadSpan.textContent = item.cantidad;
@@ -141,17 +161,7 @@ document.querySelectorAll('.agregar-carrito-btn').forEach(button => {
     });
 });
 
-function mostrarNotificacion(mensaje, color) {
-    Toastify({
-        text: mensaje,
-        duration: 3000,
-        gravity: "top",
-        position: "right",
-        backgroundColor: color,
-        stopOnFocus: true,
-        close: true
-    }).showToast();
-}
+
 
 function finalizarCompra() {
     const carrito = obtenerCarrito();
@@ -197,38 +207,4 @@ function inicializarCarrito() {
 
 inicializarCarrito();
 
-const checkoutButton = document.getElementById("checkout-button");
-if (checkoutButton) {
-    const checkoutSection = document.getElementById("checkout");
-    const cartSection = document.getElementById("cart");
-    const finalTotal = document.getElementById("final-total");
-    const cartTotal = document.getElementById("cart-total");
-    const checkoutForm = document.getElementById("checkout-form");
 
-    checkoutButton.addEventListener("click", () => {
-        finalTotal.textContent = cartTotal.textContent;
-
-        cartSection.style.display = "none";
-        checkoutSection.style.display = "block";
-    });
-
-    checkoutForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-
-        const nombre = document.getElementById("nombre").value;
-        const email = document.getElementById("email").value;
-        const direccion = document.getElementById("direccion").value;
-
-        if (nombre && email && direccion) {
-            
-            checkoutForm.reset();
-            checkoutSection.style.display = "none";
-            cartSection.style.display = "block";
-
-            document.getElementById("cart-items").innerHTML = "";
-            cartTotal.textContent = "0";
-        } else {
-            mostrarNotificacion("Por favor, completa todos los campos.", "#FF0000");
-        }
-    });
-}
