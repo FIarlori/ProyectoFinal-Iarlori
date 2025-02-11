@@ -1,8 +1,54 @@
-mostrarHistorialCompras();
-
 function obtenerHistorialCompras() {
     return JSON.parse(localStorage.getItem("historialCompras")) || [];
 }
+
+
+function cerrarComprobante() {
+    const comprobanteDiv = document.getElementById('comprobante-compra');
+    if (comprobanteDiv) {
+        comprobanteDiv.remove();
+    }
+}
+
+
+function descargarComprobante(nombre, email, direccion, metodoPago, total, productosComprados, fechaCompra) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("Comprobante de Compra", 20, 20);
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Nombre: ${nombre}`, 20, 30);
+    doc.text(`Correo Electrónico: ${email}`, 20, 40);
+    doc.text(`Dirección: ${direccion}`, 20, 50);
+    doc.text(`Fecha: ${fechaCompra}`, 20, 60);
+    doc.text(`Método de Pago: ${metodoPago === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}`, 20, 70);
+
+    doc.setLineWidth(0.5);
+    doc.line(20, 80, 190, 80);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Productos:", 20, 90);
+    doc.setFont("helvetica", "normal");
+
+    const productosArray = productosComprados.split('</li>').filter(producto => producto.trim() !== '').map(producto => producto.replace('<li>', '').trim());
+    productosArray.forEach((producto, index) => {
+        doc.text(`• ${producto}`, 20, 100 + (index * 10));
+    });
+
+    const lineaY = 100 + (productosArray.length * 10);
+    doc.setLineWidth(0.5);
+    doc.line(20, lineaY, 190, lineaY);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Total: $${total}`, 20, lineaY + 10);
+
+    doc.save('comprobante.pdf');
+}
+
 
 function mostrarHistorialCompras() {
     const historialCompras = obtenerHistorialCompras();
@@ -41,6 +87,7 @@ function mostrarHistorialCompras() {
         });
     }
 }
+
 
 function verComprobante(index) {
     const historialCompras = obtenerHistorialCompras();
@@ -85,47 +132,5 @@ function verComprobante(index) {
     document.body.appendChild(comprobanteDiv);
 }
 
-function cerrarComprobante() {
-    const comprobanteDiv = document.getElementById('comprobante-compra');
-    if (comprobanteDiv) {
-        comprobanteDiv.remove();
-    }
-}
 
-function descargarComprobante(nombre, email, direccion, metodoPago, total, productosComprados, fechaCompra) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.text("Comprobante de Compra", 20, 20);
-
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Nombre: ${nombre}`, 20, 30);
-    doc.text(`Correo Electrónico: ${email}`, 20, 40);
-    doc.text(`Dirección: ${direccion}`, 20, 50);
-    doc.text(`Fecha: ${fechaCompra}`, 20, 60);
-    doc.text(`Método de Pago: ${metodoPago === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}`, 20, 70);
-
-    doc.setLineWidth(0.5);
-    doc.line(20, 80, 190, 80);
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Productos:", 20, 90);
-    doc.setFont("helvetica", "normal");
-
-    const productosArray = productosComprados.split('</li>').filter(producto => producto.trim() !== '').map(producto => producto.replace('<li>', '').trim());
-    productosArray.forEach((producto, index) => {
-        doc.text(`• ${producto}`, 20, 100 + (index * 10));
-    });
-
-    const lineaY = 100 + (productosArray.length * 10);
-    doc.setLineWidth(0.5);
-    doc.line(20, lineaY, 190, lineaY);
-
-    doc.setFont("helvetica", "bold");
-    doc.text(`Total: $${total}`, 20, lineaY + 10 );
-
-    doc.save('comprobante.pdf');
-}
+mostrarHistorialCompras();
