@@ -103,7 +103,7 @@ function validarDireccion(input) {
 
 function validarTelefono(input) {
     if (!/^\d{7,15}$/.test(input.value.trim())) {
-        mostrarMensajeError(input, 'Campo requerido. El número de teléfono debe tener entre 7 y 15 dígitos.');
+        mostrarMensajeError(input, 'Campo requerido. El número de teléfono debe contener únicamente dígitos y tener una longitud de entre 7 y 15 caracteres.');
     } else {
         limpiarMensajeError(input);
     }
