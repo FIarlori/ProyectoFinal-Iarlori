@@ -101,11 +101,21 @@ function validarDireccion(input) {
 }
 
 
-function guardarHistorialCompra(nombre, email, direccion, metodoPago, datosTarjeta, total, carrito) {
+function validarTelefono(input) {
+    if (!/^\d{7,15}$/.test(input.value.trim())) {
+        mostrarMensajeError(input, 'Campo requerido. El número de teléfono debe tener entre 7 y 15 dígitos.');
+    } else {
+        limpiarMensajeError(input);
+    }
+}
+
+
+function guardarHistorialCompra(nombre, email, telefono, direccion, metodoPago, datosTarjeta, total, carrito) {
     const historialCompras = JSON.parse(localStorage.getItem('historialCompras')) || [];
     const nuevaCompra = {
         nombre,
         email,
+        telefono,
         direccion,
         metodoPago,
         datosTarjeta,
@@ -139,11 +149,13 @@ function cerrarComprobante() {
 
 function cerrarComprobanteYRedirigir() {
     cerrarComprobante();
-    redirigirAInicio();
+    setTimeout(() => {
+        redirigirAInicio();
+    }, 500);
 }
 
 
-function descargarComprobante(nombre, email, direccion, metodoPago, total, productosComprados, fechaCompra) {
+function descargarComprobante(nombre, email, telefono, direccion, metodoPago, total, productosComprados, fechaCompra) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
@@ -155,25 +167,26 @@ function descargarComprobante(nombre, email, direccion, metodoPago, total, produ
     doc.setFont("helvetica", "normal");
     doc.text(`Nombre: ${nombre}`, 20, 30);
     doc.text(`Correo Electrónico: ${email}`, 20, 40);
-    doc.text(`Dirección: ${direccion}`, 20, 50);
-    doc.text(`Fecha: ${fechaCompra}`, 20, 60);
-    doc.text(`Método de Pago: ${metodoPago === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}`, 20, 70);
+    doc.text(`Teléfono: ${telefono}`, 20, 50);
+    doc.text(`Dirección: ${direccion}`, 20, 60);
+    doc.text(`Fecha: ${fechaCompra}`, 20, 70);
+    doc.text(`Método de Pago: ${metodoPago === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}`, 20, 80);
 
     doc.setLineWidth(0.5);
-    doc.line(20, 80, 190, 80);
+    doc.line(20, 90, 190, 90);
 
     doc.setFont("helvetica", "bold");
-    doc.text("Productos:", 20, 90);
+    doc.text("Productos:", 20, 100);
     doc.setFont("helvetica", "normal");
 
     const productosArray = productosComprados.split('</li>').filter(producto => producto.trim() !== '').map(producto => producto.replace('<li>', '').trim());
     productosArray.forEach((producto, index) => {
-        doc.text(`• ${producto}`, 20, 100 + (index * 10));
+        doc.text(`• ${producto}`, 20, 110 + (index * 10));
     });
 
-    const lineaY = 100 + (productosArray.length * 10);
+    const lineaY = 110 + (productosArray.length * 10);
     doc.setLineWidth(0.5);
-    doc.line(20, lineaY, 190, lineaY);
+    doc.line(20, lineaY, 200, lineaY);
 
     doc.setFont("helvetica", "bold");
     doc.text(`Total: $${total}`, 20, lineaY + 10);
@@ -182,7 +195,7 @@ function descargarComprobante(nombre, email, direccion, metodoPago, total, produ
 }
 
 
-function mostrarComprobante(nombre, email, direccion, metodoPago, datosTarjeta, total, carrito) {
+function mostrarComprobante(nombre, email, telefono, direccion, metodoPago, datosTarjeta, total, carrito) {
     const fechaCompra = new Date().toLocaleString();
     let detallesTarjeta = '';
     if (metodoPago === 'tarjeta') {
@@ -205,6 +218,7 @@ function mostrarComprobante(nombre, email, direccion, metodoPago, datosTarjeta, 
                 <h2>Comprobante de Compra</h2>
                 <p><strong>Nombre:</strong> ${nombre}</p>
                 <p><strong>Correo Electrónico:</strong> ${email}</p>
+                <p><strong>Teléfono:</strong> ${telefono}</p>
                 <p><strong>Dirección:</strong> ${direccion}</p>
                 <p><strong>Fecha:</strong> ${fechaCompra}</p>
                 <p><strong>Método de Pago:</strong> ${metodoPago === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}</p>
@@ -213,7 +227,7 @@ function mostrarComprobante(nombre, email, direccion, metodoPago, datosTarjeta, 
                 <p><strong>Total:</strong> $${total.toFixed(2)}</p>
                 <div style="height: 30px;"></div>
                 <button onclick="cerrarComprobanteYRedirigir()" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar</button>
-                <button onclick="descargarComprobante('${nombre}', '${email}', '${direccion}', '${metodoPago}', '${total}', \`${productosComprados}\`, '${fechaCompra}')" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Descargar</button>
+                <button onclick="descargarComprobante('${nombre}', '${email}', '${telefono}', '${direccion}', '${metodoPago}', '${total}', \`${productosComprados}\`, '${fechaCompra}')" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Descargar</button>
             </div>
         </div>
     `;
@@ -229,6 +243,7 @@ function procesarCompra() {
         const nombre = document.getElementById("nombre").value.trim();
         const email = document.getElementById("email").value.trim();
         const direccion = document.getElementById("direccion").value.trim();
+        const telefono = document.getElementById("telefono").value.trim();
         const metodoPago = metodoDePago.value;
         const datosTarjeta = Array.from(datosTarjetaDiv.querySelectorAll('input')).map(input => ({
             nombre: input.previousElementSibling.textContent.replace(':', ''),
@@ -243,6 +258,9 @@ function procesarCompra() {
                 break;
             case !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email):
                 camposIncompletos.push('Correo Electrónico');
+                break;
+            case !/^\d{7,15}$/.test(telefono):
+                camposIncompletos.push('Número de teléfono');
                 break;
             case !direccion.trim():
                 camposIncompletos.push('Dirección');
@@ -284,7 +302,7 @@ function procesarCompra() {
                 showConfirmButton: true,
                 allowOutsideClick: true
             }).then(() => {
-                guardarHistorialCompra(nombre, email, direccion, metodoPago, datosTarjeta, totalGeneral, carrito);
+                guardarHistorialCompra(nombre, email, telefono, direccion, metodoPago, datosTarjeta, totalGeneral, carrito);
                 localStorage.removeItem("carrito");
                 document.getElementById('checkout-form').reset();
                 const productoCarrito = document.getElementById('producto-carrito');
@@ -295,7 +313,7 @@ function procesarCompra() {
                 if (totalCarrito) {
                     totalCarrito.textContent = 'Total (incluye IVA 21%): $0.00';
                 }
-                mostrarComprobante(nombre, email, direccion, metodoPago, datosTarjeta, totalGeneral, carrito);
+                mostrarComprobante(nombre, email, telefono, direccion, metodoPago, datosTarjeta, totalGeneral, carrito);
             });
         } else {
             const camposIncompletosHTML = camposIncompletos.map(campo => `<li style="text-align: left;">${campo}</li>`).join('');
@@ -324,6 +342,8 @@ document.getElementById('cvc-tarjeta').addEventListener('blur', (event) => valid
 document.getElementById('dni-tarjeta').addEventListener('input', (event) => event.target.value = event.target.value.replace(/\s+/g, ''));
 document.getElementById('dni-tarjeta').addEventListener('blur', (event) => validarDNI(event.target));
 document.getElementById('direccion').addEventListener('blur', (event) => validarDireccion(event.target));
+document.getElementById('telefono').addEventListener('blur', (event) => validarTelefono(event.target));
+document.getElementById('telefono').addEventListener('input', (event) => event.target.value = event.target.value.replace(/\s+/g, ''));
 
 
 metodoDePago.addEventListener('change', () => {
