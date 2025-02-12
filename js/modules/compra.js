@@ -245,10 +245,13 @@ function procesarCompra() {
         const direccion = document.getElementById("direccion").value.trim();
         const telefono = document.getElementById("telefono").value.trim();
         const metodoPago = metodoDePago.value;
-        const datosTarjeta = Array.from(datosTarjetaDiv.querySelectorAll('input')).map(input => ({
-            nombre: input.previousElementSibling.textContent.replace(':', ''),
-            value: input.value.trim()
-        }));
+        const datosTarjeta = [];
+        datosTarjetaDiv.querySelectorAll('input').forEach(input => {
+            datosTarjeta.push({
+                nombre: input.previousElementSibling.textContent.replace(':', ''),
+                value: input.value.trim()
+            });
+        });
 
         let camposIncompletos = [];
 
