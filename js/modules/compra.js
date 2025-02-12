@@ -238,89 +238,103 @@ function mostrarComprobante(nombre, email, telefono, direccion, metodoPago, dato
 }
 
 
-function procesarCompra() {
-    try {
-        const nombre = document.getElementById("nombre").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const direccion = document.getElementById("direccion").value.trim();
-        const telefono = document.getElementById("telefono").value.trim();
-        const metodoPago = metodoDePago.value;
-        const datosTarjeta = [];
-        datosTarjetaDiv.querySelectorAll('input').forEach(input => {
+function obtenerDatosCompra() {
+    const nombre = document.getElementById("nombre").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const direccion = document.getElementById("direccion").value.trim();
+    const telefono = document.getElementById("telefono").value.trim();
+    const metodoPago = metodoDePago.value;
+
+    let datosTarjeta = [];
+    if (metodoPago === 'tarjeta') {
+        const inputsTarjeta = datosTarjetaDiv.querySelectorAll('input');
+        inputsTarjeta.forEach(input => {
             datosTarjeta.push({
-                nombre: input.previousElementSibling.textContent.replace(':', ''),
+                nombre: input.previousElementSibling.textContent.replace(':', '').trim(),
                 value: input.value.trim()
             });
         });
+    }
 
-        let camposIncompletos = [];
+    return { nombre, email, direccion, telefono, metodoPago, datosTarjeta };
+}
 
-        switch (true) {
-            case !/^[a-zA-Z\s]+$/.test(nombre):
-                camposIncompletos.push('Nombre');
-                break;
-            case !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email):
-                camposIncompletos.push('Correo Electrónico');
-                break;
-            case !/^\d{7,15}$/.test(telefono):
-                camposIncompletos.push('Número de teléfono');
-                break;
-            case !direccion.trim():
-                camposIncompletos.push('Dirección');
-                break;
-        }
 
-        if (metodoPago === 'tarjeta') {
-            datosTarjeta.forEach(dato => {
-                switch (dato.nombre) {
-                    case 'Número de tarjeta':
-                        if (!/^\d{14,19}$/.test(dato.value)) camposIncompletos.push(dato.nombre);
-                        break;
-                    case 'Nombre y apellido del titular':
-                        if (!/^[a-zA-Z\s]+$/.test(dato.value)) camposIncompletos.push(dato.nombre);
-                        break;
-                    case 'Fecha de vencimiento': {
-                        const [mes, año] = dato.value.split('/');
-                        const fechaActual = new Date();
-                        const fechaIngresada = new Date(`20${año}`, mes - 1);
-                        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(dato.value) || fechaIngresada < fechaActual) {
-                            camposIncompletos.push(dato.nombre);
-                        }
-                        break;
+function validarCamposCompra(datos) {
+    let errores = [];
+
+    if (!/^[a-zA-Z\s]+$/.test(datos.nombre)) errores.push("Nombre");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.email)) errores.push("Correo Electrónico");
+    if (!/^\d{7,15}$/.test(datos.telefono)) errores.push("Número de teléfono");
+    if (!datos.direccion.trim()) errores.push("Dirección");
+
+    if (datos.metodoPago === 'tarjeta') {
+        datos.datosTarjeta.forEach(dato => {
+            switch (dato.nombre) {
+                case 'Número de tarjeta':
+                    if (!/^\d{14,19}$/.test(dato.value)) errores.push(dato.nombre);
+                    break;
+                case 'Nombre y apellido del titular':
+                    if (!/^[a-zA-Z\s]+$/.test(dato.value)) errores.push(dato.nombre);
+                    break;
+                case 'Fecha de vencimiento': {
+                    const [mes, año] = dato.value.split('/');
+                    const fechaActual = new Date();
+                    const fechaIngresada = new Date(`20${año}`, mes - 1);
+                    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(dato.value) || fechaIngresada < fechaActual) {
+                        errores.push(dato.nombre);
                     }
-                    case 'Código de seguridad':
-                        if (!/^\d{3,4}$/.test(dato.value)) camposIncompletos.push(dato.nombre);
-                        break;
-                    case 'DNI del titular de la tarjeta':
-                        if (!/^\d{7,10}$/.test(dato.value)) camposIncompletos.push(dato.nombre);
-                        break;
+                    break;
                 }
-            });
-        }
+                case 'Código de seguridad':
+                    if (!/^\d{3,4}$/.test(dato.value)) errores.push(dato.nombre);
+                    break;
+                case 'DNI del titular de la tarjeta':
+                    if (!/^\d{7,10}$/.test(dato.value)) errores.push(dato.nombre);
+                    break;
+            }
+        });
+    }
 
-        if (camposIncompletos.length === 0) {
+    return errores;
+}
+
+
+function finalizarCompra(datos) {
+    guardarHistorialCompra(datos.nombre, datos.email, datos.telefono, datos.direccion, datos.metodoPago, datos.datosTarjeta, totalGeneral, carrito);
+    localStorage.removeItem("carrito");
+    
+    document.getElementById('checkout-form').reset();
+    
+    const productoCarrito = document.getElementById('producto-carrito');
+    if (productoCarrito) {
+        productoCarrito.innerHTML = '<div class="mensaje-vacio">El carrito está vacío</div>';
+    }
+    const totalCarrito = document.getElementById('total-carrito');
+    if (totalCarrito) {
+        totalCarrito.textContent = 'Total (incluye IVA 21%): $0.00';
+    }
+
+    mostrarComprobante(datos.nombre, datos.email, datos.telefono, datos.direccion, datos.metodoPago, datos.datosTarjeta, totalGeneral, carrito);
+}
+
+
+function procesarCompra() {
+    try {
+        const datos = obtenerDatosCompra();
+        const errores = validarCamposCompra(datos);
+
+        if (errores.length === 0) {
             Swal.fire({
                 icon: 'success',
                 title: '¡Gracias por tu compra!',
                 showConfirmButton: true,
                 allowOutsideClick: true
             }).then(() => {
-                guardarHistorialCompra(nombre, email, telefono, direccion, metodoPago, datosTarjeta, totalGeneral, carrito);
-                localStorage.removeItem("carrito");
-                document.getElementById('checkout-form').reset();
-                const productoCarrito = document.getElementById('producto-carrito');
-                if (productoCarrito) {
-                    productoCarrito.innerHTML = '<div class="mensaje-vacio">El carrito está vacío</div>';
-                }
-                const totalCarrito = document.getElementById('total-carrito');
-                if (totalCarrito) {
-                    totalCarrito.textContent = 'Total (incluye IVA 21%): $0.00';
-                }
-                mostrarComprobante(nombre, email, telefono, direccion, metodoPago, datosTarjeta, totalGeneral, carrito);
+                finalizarCompra(datos);
             });
         } else {
-            const camposIncompletosHTML = camposIncompletos.map(campo => `<li style="text-align: left;">${campo}</li>`).join('');
-            throw new Error(`Por favor, completa los siguientes campos:<ul style="text-align: left;">${camposIncompletosHTML}</ul>`);
+            throw new Error(`Por favor, completa los siguientes campos:<ul style="text-align: left;">${errores.map(campo => `<li>${campo}</li>`).join('')}</ul>`);
         }
     } catch (error) {
         Swal.fire({
