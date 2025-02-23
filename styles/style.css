@@ -218,6 +218,10 @@ main {
     background-color: #cc0000;
 }
 
+.eliminar-btn {
+    margin-left: 150px;
+}
+
 .producto-acciones span {
     margin: 0 10px;
     font-size: 1.2em;

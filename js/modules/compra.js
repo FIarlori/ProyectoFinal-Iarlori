@@ -197,43 +197,94 @@ function descargarComprobante(nombre, email, telefono, direccion, metodoPago, to
 
 function mostrarComprobante(nombre, email, telefono, direccion, metodoPago, datosTarjeta, total, carrito) {
     const fechaCompra = new Date().toLocaleString();
-    let detallesTarjeta = '';
-    if (metodoPago === 'tarjeta') {
-        detallesTarjeta = `
-            <p><strong>Número de tarjeta:</strong> ${datosTarjeta.find(dato => dato.nombre === 'Número de tarjeta').value}</p>
-            <p><strong>Nombre del titular:</strong> ${datosTarjeta.find(dato => dato.nombre === 'Nombre y apellido del titular').value}</p>
-            <p><strong>Fecha de vencimiento:</strong> ${datosTarjeta.find(dato => dato.nombre === 'Fecha de vencimiento').value}</p>
-            <p><strong>Código de seguridad:</strong> ${datosTarjeta.find(dato => dato.nombre === 'Código de seguridad').value}</p>
-            <p><strong>DNI del titular:</strong> ${datosTarjeta.find(dato => dato.nombre === 'DNI del titular de la tarjeta').value}</p>
-        `;
-    }
-
-    const productosComprados = carrito.map(item => `
-        <li>${item.producto.nombre} - ${item.cantidad} x $${item.producto.precio.toFixed(2)}</li>
-    `).join('');
-
-    const comprobanteHTML = `
-        <div id="comprobante-compra" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center; z-index: 1000;">
-            <div style="background: white; padding: 20px; border-radius: 10px; max-width: 500px; width: 100%;">
-                <h2>Comprobante de Compra</h2>
-                <p><strong>Nombre:</strong> ${nombre}</p>
-                <p><strong>Correo Electrónico:</strong> ${email}</p>
-                <p><strong>Teléfono:</strong> ${telefono}</p>
-                <p><strong>Dirección:</strong> ${direccion}</p>
-                <p><strong>Fecha:</strong> ${fechaCompra}</p>
-                <p><strong>Método de Pago:</strong> ${metodoPago === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'}</p>
-                <p><strong>Productos:</strong></p>
-                <ul style="text-align: left;">${productosComprados}</ul>
-                <p><strong>Total:</strong> $${total.toFixed(2)}</p>
-                <div style="height: 30px;"></div>
-                <button onclick="cerrarComprobanteYRedirigir()" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar</button>
-                <button onclick="descargarComprobante('${nombre}', '${email}', '${telefono}', '${direccion}', '${metodoPago}', '${total}', \`${productosComprados}\`, '${fechaCompra}')" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">Descargar</button>
-            </div>
-        </div>
-    `;
 
     const comprobanteDiv = document.createElement('div');
-    comprobanteDiv.innerHTML = comprobanteHTML;
+    comprobanteDiv.id = 'comprobante-compra';
+    comprobanteDiv.style.position = 'fixed';
+    comprobanteDiv.style.top = '0';
+    comprobanteDiv.style.left = '0';
+    comprobanteDiv.style.width = '100%';
+    comprobanteDiv.style.height = '100%';
+    comprobanteDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    comprobanteDiv.style.display = 'flex';
+    comprobanteDiv.style.justifyContent = 'center';
+    comprobanteDiv.style.alignItems = 'center';
+    comprobanteDiv.style.zIndex = '1000';
+
+    const contenidoDiv = document.createElement('div');
+    contenidoDiv.style.backgroundColor = 'white';
+    contenidoDiv.style.padding = '20px';
+    contenidoDiv.style.borderRadius = '10px';
+    contenidoDiv.style.maxWidth = '500px';
+    contenidoDiv.style.width = '100%';
+
+    const titulo = document.createElement('h2');
+    titulo.textContent = 'Comprobante de Compra';
+    contenidoDiv.appendChild(titulo);
+
+    const detalles = document.createElement('div');
+
+    function crearParrafo(etiqueta, texto) {
+        const parrafo = document.createElement('p');
+        const strong = document.createElement('strong');
+        strong.textContent = `${etiqueta}: `;
+        parrafo.appendChild(strong);
+        parrafo.appendChild(document.createTextNode(texto));
+        return parrafo;
+    }
+
+    detalles.appendChild(crearParrafo('Nombre', nombre));
+    detalles.appendChild(crearParrafo('Correo Electrónico', email));
+    detalles.appendChild(crearParrafo('Teléfono', telefono));
+    detalles.appendChild(crearParrafo('Dirección', direccion));
+    detalles.appendChild(crearParrafo('Fecha', fechaCompra));
+    detalles.appendChild(crearParrafo('Método de Pago', metodoPago === 'tarjeta' ? 'Tarjeta de débito / crédito' : 'Efectivo en punto de pago'));
+
+    const productosTitulo = document.createElement('p');
+    const strongProductos = document.createElement('strong');
+    strongProductos.textContent = 'Productos:';
+    productosTitulo.appendChild(strongProductos);
+    detalles.appendChild(productosTitulo);
+
+    const productosLista = document.createElement('ul');
+    carrito.forEach(item => {
+        const productoItem = document.createElement('li');
+        productoItem.textContent = `${item.producto.nombre} - ${item.cantidad} x $${item.producto.precio.toFixed(2)}`;
+        productosLista.appendChild(productoItem);
+    });
+    detalles.appendChild(productosLista);
+
+    detalles.appendChild(crearParrafo('Total', `$${total.toFixed(2)}`));
+
+    contenidoDiv.appendChild(detalles);
+
+    const botonCerrar = document.createElement('button');
+    botonCerrar.textContent = 'Cerrar';
+    botonCerrar.style.padding = '10px 20px';
+    botonCerrar.style.backgroundColor = '#4CAF50';
+    botonCerrar.style.color = 'white';
+    botonCerrar.style.border = 'none';
+    botonCerrar.style.borderRadius = '5px';
+    botonCerrar.style.cursor = 'pointer';
+    botonCerrar.addEventListener('click', cerrarComprobanteYRedirigir);
+    contenidoDiv.appendChild(botonCerrar);
+
+    const botonDescargar = document.createElement('button');
+    botonDescargar.textContent = 'Descargar';
+    botonDescargar.style.padding = '10px 20px';
+    botonDescargar.style.backgroundColor = '#007bff';
+    botonDescargar.style.color = 'white';
+    botonDescargar.style.border = 'none';
+    botonDescargar.style.borderRadius = '5px';
+    botonDescargar.style.cursor = 'pointer';
+    botonDescargar.style.marginLeft = '10px';
+    botonDescargar.addEventListener('click', () => {
+        descargarComprobante(nombre, email, telefono, direccion, metodoPago, total, carrito.map(item => `${item.producto.nombre} - ${item.cantidad} x $${item.producto.precio.toFixed(2)}`).join('</li><li>'), fechaCompra);
+    });
+    contenidoDiv.appendChild(botonDescargar);
+
+    comprobanteDiv.appendChild(contenidoDiv);
+
     document.body.appendChild(comprobanteDiv);
 }
 
@@ -308,8 +359,16 @@ function finalizarCompra(datos) {
     
     const productoCarrito = document.getElementById('producto-carrito');
     if (productoCarrito) {
-        productoCarrito.innerHTML = '<div class="mensaje-vacio">El carrito está vacío</div>';
+        while (productoCarrito.firstChild) {
+            productoCarrito.removeChild(productoCarrito.firstChild);
+        }
+
+        const mensajeVacio = document.createElement('div');
+        mensajeVacio.classList.add('mensaje-vacio');
+        mensajeVacio.textContent = 'El carrito está vacío';
+        productoCarrito.appendChild(mensajeVacio);
     }
+
     const totalCarrito = document.getElementById('total-carrito');
     if (totalCarrito) {
         totalCarrito.textContent = 'Total (incluye IVA 21%): $0.00';

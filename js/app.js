@@ -54,34 +54,63 @@ function agregarProductoAlCarrito(idProducto, categoria) {
 
 function mostrarProductos(productos) {
     const appDiv = document.getElementById('app');
-    appDiv.innerHTML = ''; 
+    
+    while (appDiv.firstChild) {
+        appDiv.removeChild(appDiv.firstChild);
+    }
 
     productos.forEach(producto => {
         const productoDiv = document.createElement('div');
         productoDiv.classList.add('producto');
-        productoDiv.innerHTML = `
-            <div class="producto-imagen">
-                <img src="./assets/images/${producto.imagen}" alt="${producto.nombre}">
-            </div>
-            <div class="producto-detalles">
-                <p class="producto-nombre">${producto.nombre} - $${producto.precio}</p>
-                <div class="producto-acciones">
-                    <button class="cantidad-btn" onclick="cambiarCantidad(${producto.id}, '${producto.categoria}', -1)">-</button>
-                    <span id="cantidad-${producto.categoria}-${producto.id}">1</span>
-                    <button class="cantidad-btn" onclick="cambiarCantidad(${producto.id}, '${producto.categoria}', 1)">+</button>
-                    <button class="agregar-btn agregar-carrito-btn" data-id-producto="${producto.id}" data-categoria="${producto.categoria}">Agregar al carrito</button>
-                </div>
-            </div>
-        `;
-        appDiv.appendChild(productoDiv);
-    });
 
-    document.querySelectorAll('.agregar-carrito-btn').forEach(button => {
-        button.addEventListener('click', (event) => {
-            const idProducto = event.target.getAttribute('data-id-producto');
-            const categoria = event.target.getAttribute('data-categoria');
-            agregarProductoAlCarrito(parseInt(idProducto), categoria);
-        });
+        const productoImagen = document.createElement('div');
+        productoImagen.classList.add('producto-imagen');
+        const imagen = document.createElement('img');
+        imagen.src = `./assets/images/${producto.imagen}`;
+        imagen.alt = producto.nombre;
+        productoImagen.appendChild(imagen);
+
+        const productoDetalles = document.createElement('div');
+        productoDetalles.classList.add('producto-detalles');
+
+        const productoNombre = document.createElement('p');
+        productoNombre.classList.add('producto-nombre');
+        productoNombre.textContent = `${producto.nombre} - $${producto.precio}`;
+
+        const productoAcciones = document.createElement('div');
+        productoAcciones.classList.add('producto-acciones');
+
+        const botonDisminuir = document.createElement('button');
+        botonDisminuir.classList.add('cantidad-btn');
+        botonDisminuir.textContent = '-';
+        botonDisminuir.addEventListener('click', () => cambiarCantidad(producto.id, producto.categoria, -1));
+
+        const cantidadSpan = document.createElement('span');
+        cantidadSpan.id = `cantidad-${producto.categoria}-${producto.id}`;
+        cantidadSpan.textContent = '1';
+
+        const botonAumentar = document.createElement('button');
+        botonAumentar.classList.add('cantidad-btn');
+        botonAumentar.textContent = '+';
+        botonAumentar.addEventListener('click', () => cambiarCantidad(producto.id, producto.categoria, 1));
+
+        const botonAgregar = document.createElement('button');
+        botonAgregar.classList.add('agregar-btn', 'agregar-carrito-btn');
+        botonAgregar.textContent = 'Agregar al carrito';
+        botonAgregar.addEventListener('click', () => agregarProductoAlCarrito(producto.id, producto.categoria));
+
+        productoAcciones.appendChild(botonDisminuir);
+        productoAcciones.appendChild(cantidadSpan);
+        productoAcciones.appendChild(botonAumentar);
+        productoAcciones.appendChild(botonAgregar);
+
+        productoDetalles.appendChild(productoNombre);
+        productoDetalles.appendChild(productoAcciones);
+
+        productoDiv.appendChild(productoImagen);
+        productoDiv.appendChild(productoDetalles);
+
+        appDiv.appendChild(productoDiv);
     });
 }
 

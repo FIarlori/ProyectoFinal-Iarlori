@@ -36,11 +36,33 @@ function eliminarProductoDelCarrito(idProducto, categoria) {
     mostrarNotificacion("Producto eliminado del carrito", "#FFA500");
 }
 
+function eliminarProductoBoton(event) {
+    const idProducto = parseInt(event.target.getAttribute('data-id-producto'));
+    const categoria = event.target.getAttribute('data-categoria');
+
+    Swal.fire({
+        title: "¿Deseas eliminar este producto del carrito?",
+        text: "",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'No, mantener'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            eliminarProductoDelCarrito(idProducto, categoria);
+            mostrarCarrito();
+        }
+    });
+}
 
 function mostrarCarrito() {
     const carrito = obtenerCarrito();
     const carritoDiv = document.getElementById('producto-carrito');
-    carritoDiv.innerHTML = '';
+    
+    while (carritoDiv.firstChild) {
+        carritoDiv.removeChild(carritoDiv.firstChild);
+    }
+
     let totalGeneral = 0;
 
     if (carrito.length === 0) {
@@ -55,29 +77,71 @@ function mostrarCarrito() {
             const totalProducto = calcularTotal(item.producto.precio, item.cantidad);
             const productoDiv = document.createElement('div');
             productoDiv.classList.add('producto');
-            productoDiv.innerHTML = `
-                <div class="producto-imagen">
-                    <img src="../assets/images/${item.producto.imagen}" alt="${item.producto.nombre}">
-                </div>
-                <div class="producto-detalles">
-                    <p class="producto-nombre">${item.producto.nombre} - $${item.producto.precio}</p>
-                    <div class="producto-acciones">
-                        <button class="cantidad-btn" data-id-producto="${item.producto.id}" data-categoria="${item.categoria}" data-cambio="-1">-</button>
-                        <span id="cantidad-${item.categoria}-${item.producto.id}">${item.cantidad}</span>
-                        <button class="cantidad-btn" data-id-producto="${item.producto.id}" data-categoria="${item.categoria}" data-cambio="1">+</button>
-                    </div>
-                </div>
-            `;
+
+            const productoImagen = document.createElement('div');
+            productoImagen.classList.add('producto-imagen');
+            const imagen = document.createElement('img');
+            imagen.src = `../assets/images/${item.producto.imagen}`;
+            imagen.alt = item.producto.nombre;
+            productoImagen.appendChild(imagen);
+
+            const productoDetalles = document.createElement('div');
+            productoDetalles.classList.add('producto-detalles');
+
+            const productoNombre = document.createElement('p');
+            productoNombre.classList.add('producto-nombre');
+            productoNombre.textContent = `${item.producto.nombre} - $${item.producto.precio}`;
+
+            const productoAcciones = document.createElement('div');
+            productoAcciones.classList.add('producto-acciones');
+
+            const botonDisminuir = document.createElement('button');
+            botonDisminuir.classList.add('cantidad-btn');
+            botonDisminuir.setAttribute('data-id-producto', item.producto.id);
+            botonDisminuir.setAttribute('data-categoria', item.categoria);
+            botonDisminuir.setAttribute('data-cambio', '-1');
+            botonDisminuir.textContent = '-';
+
+            const cantidadSpan = document.createElement('span');
+            cantidadSpan.id = `cantidad-${item.categoria}-${item.producto.id}`;
+            cantidadSpan.textContent = item.cantidad;
+
+            const botonAumentar = document.createElement('button');
+            botonAumentar.classList.add('cantidad-btn');
+            botonAumentar.setAttribute('data-id-producto', item.producto.id);
+            botonAumentar.setAttribute('data-categoria', item.categoria);
+            botonAumentar.setAttribute('data-cambio', '1');
+            botonAumentar.textContent = '+';
+
+            const botonEliminar = document.createElement('button');
+            botonEliminar.classList.add('eliminar-btn');
+            botonEliminar.style.width = '100px';
+            botonEliminar.setAttribute('data-id-producto', item.producto.id);
+            botonEliminar.setAttribute('data-categoria', item.categoria);
+            botonEliminar.textContent = 'Eliminar';
+
+            productoAcciones.appendChild(botonDisminuir);
+            productoAcciones.appendChild(cantidadSpan);
+            productoAcciones.appendChild(botonAumentar);
+            productoAcciones.appendChild(botonEliminar);
+
+            productoDetalles.appendChild(productoNombre);
+            productoDetalles.appendChild(productoAcciones);
+
+            productoDiv.appendChild(productoImagen);
+            productoDiv.appendChild(productoDetalles);
+
             carritoDiv.appendChild(productoDiv);
+
             totalGeneral += totalProducto;
         });
+
         document.getElementById('finalizarCompraBtn').disabled = false;
         document.getElementById('vaciarCarritoBtn').disabled = false;
     }
 
     document.getElementById('total-carrito').textContent = `Total (incluye IVA 21%): $${totalGeneral.toFixed(2)}`;
 }
-
 
 function actualizarCantidadEnCarrito(idProducto, categoria, cambio) {
     const carrito = obtenerCarrito();
@@ -211,6 +275,8 @@ function inicializarCarrito() {
     document.addEventListener('click', (event) => {
         if (event.target.classList.contains('cantidad-btn')) {
             manejarCambioCantidad(event);
+        } else if (event.target.classList.contains('eliminar-btn')) {
+            eliminarProductoBoton(event);
         }
     });
 
